@@ -10,18 +10,30 @@ namespace BulbapediaScraper.Runner
 {
     class Program
     {
-        private const string POKEMON_LIST_URL = "https://bulbapedia.bulbagarden.net/w/index.php?title=List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number&oldid=2853096";
+        private const string POKEMON_LIST_URLID = "List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number";
+        private const string BASE_URL = "https://bulbapedia.bulbagarden.net/w/index.php?title=";
+        private const string BASE_IMAGE_URL = "https://";
+
+        private static HtmlWeb _htmlWeb;
 
         static void Main(string[] args)
         {
             Console.WriteLine("BulbapediaScraper was initialized");
-
             Console.WriteLine();
 
+            _htmlWeb = new HtmlWeb();
+
+            var pokemonList = ScrapePokemonList(GetFullPath(POKEMON_LIST_URLID));
+
+            Console.WriteLine();
+            Console.WriteLine("BulbapediaScraper was finalized");
+        }
+
+        private static Dictionary<int, Pokemon> ScrapePokemonList(string url)
+        {
             Console.WriteLine("Scraping: Pokémon list");
 
-            var htmlWeb = new HtmlWeb();
-            var htmlPage = htmlWeb.Load(POKEMON_LIST_URL);
+            var htmlPage = _htmlWeb.Load(url);
 
             var pokemonTables = htmlPage.DocumentNode.SelectNodes("//body/div[@id='globalWrapper']/div[@id='column-content']/div[@id='content']/div[@id='outercontentbox']/div[@id='contentbox']/div[@id='bodyContent']/div[@id='mw-content-text']/table");
 
@@ -47,6 +59,7 @@ namespace BulbapediaScraper.Runner
                     var picture = rollCollumns.GetByIndex(PokemonListTableIndex.Picture).SelectSingleNode("a/img")
                         .Attributes["src"].Value.Trim('/');
                     var name = rollCollumns.GetByIndex(PokemonListTableIndex.PokemonName).SelectSingleNode("a").InnerText;
+                    var profileUrl = rollCollumns.GetByIndex(PokemonListTableIndex.PokemonName).SelectSingleNode("a").Attributes["href"].Value.Replace("/wiki/", "");
 
                     var types = new List<Models.Type>
                     {
@@ -55,11 +68,14 @@ namespace BulbapediaScraper.Runner
                     if (rollCollumns.Count > 5)
                         types.Add(new Models.Type(rollCollumns.GetByIndex(PokemonListTableIndex.Type2).SelectSingleNode("a/span").InnerText));
 
-                    var nationalPokedexNumber = Convert.ToInt32(ndex);
+                    // New pokemons without numbers are not supported
+                    if (!int.TryParse(ndex, out int nationalPokedexNumber))
+                        continue;
+
                     if (pokemonList.ContainsKey(nationalPokedexNumber))
                     {
                         pokemonList[nationalPokedexNumber].RegionalVariants.Add(
-                            new RegionalVariant($"https://{picture}", types));
+                            new RegionalVariant(GetImageFullPath(picture), types));
                     }
                     else
                     {
@@ -68,15 +84,21 @@ namespace BulbapediaScraper.Runner
                             Name = name,
                             RegionalPokedexNumber = rdex == "&160;" ? null : rdex,
                             NationalPokedexNumber = nationalPokedexNumber,
-                            Picture = $"https://{picture}",
-                            Types = types
+                            Picture = GetImageFullPath(picture),
+                            Types = types,
+                            ProfileUrl = GetFullPath(profileUrl)
                         });
                     }
                 }
             }
 
-            Console.WriteLine();
-            Console.WriteLine("BulbapediaScraper was finalized");
+            return pokemonList;
         }
+
+        private static string GetImageFullPath(string imagePath) =>
+            $"{BASE_IMAGE_URL}{imagePath}";
+
+        private static string GetFullPath(string path) =>
+            $"{BASE_URL}{path}";
     }
 }

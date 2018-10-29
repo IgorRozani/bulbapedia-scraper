@@ -17,6 +17,8 @@ namespace BulbapediaScraper.Runner.Models
 
         public string Picture { get; set; }
 
+        public string ProfileUrl { get; set; }
+
         public List<RegionalVariant> RegionalVariants { get; set; }
 
         public ICollection<Type> Types { get; set; }
