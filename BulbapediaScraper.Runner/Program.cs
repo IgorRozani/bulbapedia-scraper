@@ -11,6 +11,7 @@ namespace BulbapediaScraper.Runner
     class Program
     {
         private const string POKEMON_LIST_URLID = "List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number";
+        private const string POKEMON_EVOLUTION_LIST_PATH = "List_of_Pokémon_by_evolution_family";
         private const string BASE_URL = "https://bulbapedia.bulbagarden.net/w/index.php?title=";
         private const string BASE_IMAGE_URL = "https://";
 
