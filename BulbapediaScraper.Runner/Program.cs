@@ -10,7 +10,7 @@ namespace BulbapediaScraper.Runner
 {
     class Program
     {
-        private const string POKEMON_LIST_URLID = "List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number";
+        private const string POKEMON_LIST_PATH = "List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number";
         private const string POKEMON_EVOLUTION_LIST_PATH = "List_of_Pokémon_by_evolution_family";
         private const string BASE_URL = "https://bulbapedia.bulbagarden.net/w/index.php?title=";
         private const string BASE_IMAGE_URL = "https://";
@@ -24,7 +24,9 @@ namespace BulbapediaScraper.Runner
 
             _htmlWeb = new HtmlWeb();
 
-            var pokemonList = ScrapePokemonList(GetFullPath(POKEMON_LIST_URLID));
+            var pokemonList = ScrapePokemonList(GetFullPath(POKEMON_LIST_PATH));
+
+            ScrapePokemonEvolutionList(GetFullPath(POKEMON_EVOLUTION_LIST_PATH), ref pokemonList);
 
             Console.WriteLine();
             Console.WriteLine("BulbapediaScraper was finalized");
@@ -34,7 +36,7 @@ namespace BulbapediaScraper.Runner
         {
             Console.WriteLine("Scraping: Pokémon list");
 
-            var htmlPage = _htmlWeb.Load(url);
+            var htmlPage = DownloadPage(url);
 
             var pokemonTables = htmlPage.DocumentNode.SelectNodes("//body/div[@id='globalWrapper']/div[@id='column-content']/div[@id='content']/div[@id='outercontentbox']/div[@id='contentbox']/div[@id='bodyContent']/div[@id='mw-content-text']/table");
 
@@ -95,6 +97,18 @@ namespace BulbapediaScraper.Runner
 
             return pokemonList;
         }
+
+        private static void ScrapePokemonEvolutionList(string url, ref Dictionary<int, Pokemon> pokemonList)
+        {
+            Console.WriteLine("Scraping: Pokémon evolution list");
+
+            var htmlPage = DownloadPage(url);
+
+
+        }
+
+        private static HtmlDocument DownloadPage(string url)
+            => _htmlWeb.Load(url);
 
         private static string GetImageFullPath(string imagePath) =>
             $"{BASE_IMAGE_URL}{imagePath}";
