@@ -7,6 +7,8 @@ namespace BulbapediaScraper.Runner.Models
         public Pokemon()
         {
             RegionalVariants = new List<RegionalVariant>();
+            Evolutions = new List<Evolution>();
+            Types = new List<Type>();
         }
 
         public int NationalPokedexNumber { get; set; }
@@ -22,5 +24,7 @@ namespace BulbapediaScraper.Runner.Models
         public List<RegionalVariant> RegionalVariants { get; set; }
 
         public ICollection<Type> Types { get; set; }
+
+        public ICollection<Evolution> Evolutions { get; set; }
     }
 }

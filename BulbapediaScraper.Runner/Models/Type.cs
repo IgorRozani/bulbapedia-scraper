@@ -1,6 +1,5 @@
 ﻿namespace BulbapediaScraper.Runner.Models
 {
-
     public class Type
     {
         public Type(string name)

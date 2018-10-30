@@ -104,7 +104,22 @@ namespace BulbapediaScraper.Runner
 
             var htmlPage = DownloadPage(url);
 
+            var evolutionTables = htmlPage.DocumentNode.SelectNodes("//body/div[@id='globalWrapper']/div[@id='column-content']/div[@id='content']/div[@id='outercontentbox']/div[@id='contentbox']/div[@id='bodyContent']/div[@id='mw-content-text']/table");
 
+            foreach (var evolutionTable in evolutionTables)
+            {
+                var rolls = evolutionTable.SelectNodes("tr");
+
+                foreach (var roll in rolls)
+                {
+                    var rollCollumns = roll.SelectNodes("td");
+
+                    if (rollCollumns.Count == 0)
+                        continue;
+
+
+                }
+            }
         }
 
         private static HtmlDocument DownloadPage(string url)
