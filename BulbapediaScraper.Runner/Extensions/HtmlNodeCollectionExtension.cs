@@ -1,11 +1,13 @@
-﻿using BulbapediaScraper.Runner.Enums;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
+using System;
 
 namespace BulbapediaScraper.Runner.Extensions
 {
     public static class HtmlNodeCollectionExtension
     {
-        public static HtmlNode GetByIndex(this HtmlNodeCollection elements, PokemonListTableIndex index) =>
-            elements[(int)index];
+        public static HtmlNode GetByIndex(this HtmlNodeCollection elements, Enum index)
+        {
+            return elements[Convert.ToInt32(index)];
+        }
     }
 }

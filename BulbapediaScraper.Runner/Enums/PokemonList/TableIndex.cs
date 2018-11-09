@@ -1,6 +1,6 @@
-﻿namespace BulbapediaScraper.Runner.Enums
+﻿namespace BulbapediaScraper.Runner.Enums.PokemonList
 {
-    public enum PokemonListTableIndex
+    public enum TableIndex
     {
         Rdex = 0,
         Ndex = 1,
