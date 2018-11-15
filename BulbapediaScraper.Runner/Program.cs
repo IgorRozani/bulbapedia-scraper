@@ -27,7 +27,7 @@ namespace BulbapediaScraper.Runner
 
             var pokemonList = ScrapePokemonList(GetFullPath(POKEMON_LIST_PATH));
 
-            ScrapePokemonEvolutionList(GetFullPath(POKEMON_EVOLUTION_LIST_PATH), ref pokemonList);
+            ScrapePokemonEvolutionList(GetFullPath(POKEMON_EVOLUTION_LIST_PATH), pokemonList.Values.ToList());
 
             Console.WriteLine();
             Console.WriteLine("BulbapediaScraper was finalized");
@@ -59,8 +59,8 @@ namespace BulbapediaScraper.Runner
 
                     var rollCollumns = roll.SelectNodes("td");
 
-                    var rdex = rollCollumns.GetByIndex(TableIndex.Rdex).InnerText.Replace('\n', ' ').Replace("#", "").Trim();
-                    var ndex = rollCollumns.GetByIndex(TableIndex.Ndex).InnerText.Replace('\n', ' ').Replace("#", "").Trim();
+                    var rdex = rollCollumns.GetByIndex(TableIndex.Rdex).InnerText.RemoveSpecialCharacter();
+                    var ndex = rollCollumns.GetByIndex(TableIndex.Ndex).InnerText.RemoveSpecialCharacter();
                     var picture = rollCollumns.GetByIndex(TableIndex.Picture).SelectSingleNode("a/img")
                         .Attributes["src"].Value.Trim('/');
                     var name = rollCollumns.GetByIndex(TableIndex.PokemonName).SelectSingleNode("a").InnerText;
@@ -100,7 +100,7 @@ namespace BulbapediaScraper.Runner
             return pokemonList;
         }
 
-        private static void ScrapePokemonEvolutionList(string url, ref Dictionary<int, Pokemon> pokemonList)
+        private static ICollection<Pokemon> ScrapePokemonEvolutionList(string url, ICollection<Pokemon> pokemonList)
         {
             Console.WriteLine("Scraping: Pokémon evolution list");
 
@@ -112,6 +112,9 @@ namespace BulbapediaScraper.Runner
             {
                 var rolls = evolutionTable.SelectNodes("tr");
 
+                var pokemon1 = new Pokemon();
+                var pokemon2 = new Pokemon();
+
                 foreach (var roll in rolls)
                 {
                     var rollCollumns = roll.SelectNodes("td");
@@ -120,57 +123,82 @@ namespace BulbapediaScraper.Runner
 
                     if (rollCollumns.Count == 8 || rollCollumns.Count == 6)
                     {
-                        if(rollCollumns[0].SelectSingleNode("a/img") != null)
+                        if (rollCollumns[0].SelectSingleNode("a/img") != null)
                         {
                             var pokemon1Name = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.Pokemon1Name).SelectSingleNode("a/span").InnerText;
-                            var condition1 = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.ConditionEvolution1).InnerText;
+                            var condition1 = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.ConditionEvolution1).InnerText.RemoveSpecialCharacter();
                             var pokemon2Name = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.Pokemon2Name).SelectSingleNode("a/span").InnerText;
+
+                            pokemon1 = pokemonList.FirstOrDefault(p => p.Name == pokemon1Name);
+                            pokemon2 = pokemonList.FirstOrDefault(p => p.Name == pokemon2Name);
+                            pokemon1.Evolutions.Add(new Evolution(condition1, pokemon2));
 
                             if (rollCollumns.Count == 8)
                             {
                                 var pokemon3Name = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.Pokemon3Name).SelectSingleNode("a/span").InnerText;
-                                var condition2 = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.ConditionEvolution2).InnerText;
+                                var condition2 = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.ConditionEvolution2).InnerText.RemoveSpecialCharacter();
+
+                                var pokemon3 = pokemonList.FirstOrDefault(p => p.Name == pokemon3Name);
+                                pokemon2.Evolutions.Add(new Evolution(condition2, pokemon3));
                             }
                         }
                         else
                         {
-                            var condition1 = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.ConditionEvolution1).InnerText;
+                            var condition1 = rollCollumns.GetByIndex(MultipleFirstAndSecondEvolutionRowIndex.ConditionEvolution1).InnerText.RemoveSpecialCharacter();
                             var pokemon2Name = rollCollumns.GetByIndex(MultipleFirstAndSecondEvolutionRowIndex.Pokemon2Name).SelectSingleNode("a/span").InnerText;
 
-                            var condition2 = rollCollumns.GetByIndex(MultipleFirstAndSecondEvolutionRowIndex.ConditionEvolution2).InnerText;
+                            pokemon2 = pokemonList.FirstOrDefault(p => p.Name == pokemon2Name);
+                            pokemon1.Evolutions.Add(new Evolution(condition1, pokemon2));
+
+                            var condition2 = rollCollumns.GetByIndex(MultipleFirstAndSecondEvolutionRowIndex.ConditionEvolution2).InnerText.RemoveSpecialCharacter();
                             var pokemon3Name = rollCollumns.GetByIndex(MultipleFirstAndSecondEvolutionRowIndex.Pokemon2Name).SelectSingleNode("a/span").InnerText;
+
+                            var pokemon3 = pokemonList.FirstOrDefault(p => p.Name == pokemon3Name);
+                            pokemon2.Evolutions.Add(new Evolution(condition2, pokemon3));
                         }
                     }
                     else if (rollCollumns.Count == 4)
                     {
-                        if(rollCollumns[0].SelectSingleNode("a/img") == null)
+                        if (rollCollumns[0].SelectSingleNode("a/img") == null)
                         {
-                            var condition = rollCollumns.GetByIndex(MultipleFirstEvolutionRowIndex.Condition).InnerText;
+                            var condition = rollCollumns.GetByIndex(MultipleFirstEvolutionRowIndex.Condition).InnerText.RemoveSpecialCharacter();
                             var pokemonName = rollCollumns.GetByIndex(MultipleFirstEvolutionRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
+
+                            pokemon2 = pokemonList.FirstOrDefault(p => p.Name == pokemonName);
+                            pokemon1.Evolutions.Add(new Evolution(condition, pokemon2));
                         }
                         else
                         {
                             var pokemonName = rollCollumns.GetByIndex(MultipleFormeRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
+                            var picture = rollCollumns.GetByIndex(MultipleFormeRowIndex.PokemonImage).SelectSingleNode("a/img").Attributes["src"].Value.Trim('/');
 
                             var formeRow = rollCollumns.GetByIndex(MultipleFormeRowIndex.Forme);
                             var forme = formeRow.SelectSingleNode("a") != null ? formeRow.SelectSingleNode("a").InnerText : formeRow.InnerText;
+
+                            pokemonList.FirstOrDefault(p => p.Name == pokemonName)?.Formes.Add(new Forme(forme.RemoveSpecialCharacter(), GetImageFullPath(picture)));
                         }
-                        
+
                     }
                     else if (rollCollumns.Count == 3)
                     {
-                        if(rollCollumns[0].SelectSingleNode("a/img") == null)
+                        if (rollCollumns[0].SelectSingleNode("a/img") == null)
                         {
-                            var condition = rollCollumns.GetByIndex(MultipleSecondEvolutionRowIndex.Condition).InnerText;
+                            var condition = rollCollumns.GetByIndex(MultipleSecondEvolutionRowIndex.Condition).InnerText.RemoveSpecialCharacter();
                             var pokemonName = rollCollumns.GetByIndex(MultipleSecondEvolutionRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
+
+                            var pokemon3 = pokemonList.FirstOrDefault(p => p.Name == pokemonName);
+                            pokemon2.Evolutions.Add(new Evolution(condition, pokemon3));
                         }
                         else
                         {
                             var pokemonName = rollCollumns.GetByIndex(WithoutEvolutionRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
+                            // Do nothing
                         }
                     }
                 }
             }
+
+            return pokemonList;
         }
 
         private static HtmlDocument DownloadPage(string url)
