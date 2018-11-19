@@ -14,6 +14,7 @@ namespace BulbapediaScraper.Runner
         private const string POKEMON_LIST_PATH = "List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number";
         private const string POKEMON_EVOLUTION_LIST_PATH = "List_of_Pokémon_by_evolution_family";
         private const string POKEMON_FORMS_LIST_PATH = "List_of_Pokémon_with_form_differences";
+        private const string POKEMON_MEGA_EVOLUTION_LIST_PATH = "Mega_Evolution";
         private const string BASE_URL = "https://bulbapedia.bulbagarden.net/w/index.php?title=";
         private const string BASE_IMAGE_URL = "https://";
 
