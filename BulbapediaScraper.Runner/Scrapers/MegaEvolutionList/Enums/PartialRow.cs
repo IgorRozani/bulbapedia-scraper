@@ -1,4 +1,4 @@
-﻿namespace BulbapediaScraper.Runner.Enums.MegaEvolutionList
+﻿namespace BulbapediaScraper.Runner.Scrapers.MegaEvolutionList.Enums
 {
 
     public enum PartialRow

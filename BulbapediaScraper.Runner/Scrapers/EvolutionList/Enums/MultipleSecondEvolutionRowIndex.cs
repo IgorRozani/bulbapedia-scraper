@@ -1,4 +1,4 @@
-﻿namespace BulbapediaScraper.Runner.Enums.EvolutionList
+﻿namespace BulbapediaScraper.Runner.Scrapers.EvolutionList.Enums
 {
 
     public enum MultipleSecondEvolutionRowIndex

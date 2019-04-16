@@ -1,4 +1,4 @@
-﻿namespace BulbapediaScraper.Runner.Enums.PokemonList
+﻿namespace BulbapediaScraper.Runner.Scrapers.PokemonList.Enums
 {
     public enum TableIndex
     {
