@@ -54,7 +54,8 @@ namespace BulbapediaScraper.Runner
         {
             if (scraper is EvolutionList)
                 return UrlHelper.GetFullPath(POKEMON_EVOLUTION_LIST_PATH);
-            else if (scraper is MegaEvolutionList)
+
+            if (scraper is MegaEvolutionList)
                 return UrlHelper.GetFullPath(POKEMON_MEGA_EVOLUTION_LIST_PATH);
 
             return string.Empty;
