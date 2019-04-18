@@ -25,7 +25,6 @@ namespace BulbapediaScraper.Runner
 
             var htmlWeb = new HtmlWeb();
 
-
             IPokemonListScraper pokemonListScraper = new PokemonList(htmlWeb);
 
             Console.WriteLine("Scraping: {0}", pokemonListScraper.GetName());
@@ -43,6 +42,9 @@ namespace BulbapediaScraper.Runner
 
                 scraper.Scrape(GetScraperUrl(scraper), pokemonList);
             }
+
+            Console.WriteLine("Generating script");
+            var script = new ScriptGenerator.ScriptGenerator().Generate(pokemonList);
 
             Console.WriteLine();
             Console.WriteLine("BulbapediaScraper was finalized");
