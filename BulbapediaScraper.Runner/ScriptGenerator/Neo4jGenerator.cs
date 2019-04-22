@@ -119,7 +119,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                 scriptBuilder.Append("}");
             }
 
-            scriptBuilder.Append("]-(").Append(relationship.NodeId2).Append(")");
+            scriptBuilder.Append("]->(").Append(relationship.NodeId2).Append(")");
 
             return scriptBuilder.ToString();
         }
