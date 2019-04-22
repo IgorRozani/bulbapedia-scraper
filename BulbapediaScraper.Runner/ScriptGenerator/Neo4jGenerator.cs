@@ -9,23 +9,22 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
     public class Neo4jGenerator
     {
         private const string CREATE = "CREATE ";
-        private const string SCRIPT_END = ";";
 
         public string CreateNodes(IList<Node> nodes)
         {
             var scriptStringBuilder = new StringBuilder();
-            scriptStringBuilder.Append(CREATE);
+            scriptStringBuilder.AppendLine(CREATE);
             foreach (var node in nodes)
             {
-                scriptStringBuilder.AppendLine(GenerateNode(node));
+                scriptStringBuilder.Append(GenerateNode(node));
                 if (node != nodes.LastOrDefault())
-                    scriptStringBuilder.Append(", ");
+                    scriptStringBuilder.AppendLine(", ");
             }
-            return scriptStringBuilder.Append(SCRIPT_END).ToString();
+            return scriptStringBuilder.ToString();
         }
 
         public string CreateNode(Node node) =>
-            CREATE + GenerateNode(node) + SCRIPT_END;
+            CREATE + GenerateNode(node);
 
         private string GenerateNode(Node node)
         {
@@ -41,12 +40,15 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
                 foreach (var property in node.Properties)
                 {
+                    if (property.Value == null)
+                        continue;
+
                     scriptBuilder.Append(property.Key).Append(":");
 
                     switch (Type.GetTypeCode(property.Value.GetType()))
                     {
                         case TypeCode.String:
-                            scriptBuilder.Append("'").Append(property.Value).Append("'");
+                            scriptBuilder.Append("\"").Append(property.Value).Append("\"");
                             break;
                         case TypeCode.DateTime:
                             var datetime = (DateTime)property.Value;
@@ -64,7 +66,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                 scriptBuilder.Append("}");
             }
 
-            scriptBuilder.Append(" )");
+            scriptBuilder.Append(")");
 
             return scriptBuilder.ToString();
         }
@@ -80,11 +82,11 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                 if (relationship != relationships.LastOrDefault())
                     scriptStringBuilder.Append(", ");
             }
-            return scriptStringBuilder.Append(";").ToString();
+            return scriptStringBuilder.ToString();
         }
 
         public string CreateRelationship(Relationship relationship) =>
-            CREATE + GenerateRelationship(relationship) + SCRIPT_END;
+            CREATE + GenerateRelationship(relationship);
 
         private string GenerateRelationship(Relationship relationship)
         {

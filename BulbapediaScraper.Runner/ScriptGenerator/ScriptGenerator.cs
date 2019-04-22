@@ -1,4 +1,6 @@
-﻿using BulbapediaScraper.Runner.Models;
+﻿using BulbapediaScraper.Runner.Helpers;
+using BulbapediaScraper.Runner.Models;
+using BulbapediaScraper.Runner.ScriptGenerator.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,34 +9,67 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 {
     public class ScriptGenerator
     {
+        public ScriptGenerator()
+        {
+            _neo4jGenerator = new Neo4jGenerator();
+        }
+
+        private Neo4jGenerator _neo4jGenerator;
+
         public string Generate(ICollection<Pokemon> pokemons)
         {
-            var neo4jGenerator = new Neo4jGenerator();
+            var scriptBuilder = new StringBuilder();
 
-            var script = new StringBuilder();
-            script.AppendLine("CREATE");
-            var scriptTypes = new StringBuilder();
-            scriptTypes.AppendLine("CREATE");
+            var types = pokemons.SelectMany(p => p.Types).Distinct(new TypeEqualityComparer()).ToList();
+            scriptBuilder.Append(GenerateTypes(types));
 
-            var types = new List<Type>();
+            scriptBuilder.AppendLine();
 
-            
-            foreach(var pokemon in pokemons)
+            scriptBuilder.AppendLine(GeneratePokemons(pokemons));
+
+            return scriptBuilder.ToString();
+        }
+
+        private string GenerateTypes(ICollection<Type> types)
+        {
+            var nodes = new List<Node>();
+            foreach (var type in types)
             {
-                foreach(var type in pokemon.Types)
+                nodes.Add(new Node
                 {
-                    if (types.All(t => t.Name != type.Name))
+                    Id = type.Name,
+                    Labels = new List<string> { "Type" },
+                    Properties = new Dictionary<string, object>
                     {
-                        types.Add(type);
-                        scriptTypes.AppendLine($"({type.Name}:Type) {{ name: '{type.Name}'}}),");
+                        { "Name",type.Name }
                     }
-                        
-
-                }
-                script.AppendLine($"({pokemon.GetCleanName()}:Pokemon {{ name:\"{pokemon.Name}\", nationalPokedexNumber:{pokemon.NationalPokedexNumber}, regionalPokedexNumber:'{pokemon.RegionalPokedexNumber}', picture:'{pokemon.Picture}', profileUrl:'{pokemon.ProfileUrl}' }}),");
+                });
             }
 
-            return script.ToString();
+            return _neo4jGenerator.CreateNodes(nodes);
+        }
+
+        private string GeneratePokemons(ICollection<Pokemon> pokemons)
+        {
+            var nodes = new List<Node>();
+            foreach (var pokemon in pokemons)
+            {
+                nodes.Add(new Node
+                {
+                    Id = pokemon.GetCleanName(),
+                    Labels = new List<string> { "Pokemon" },
+                    Properties = new Dictionary<string, object>
+                    {
+                        { "name", pokemon.Name },
+                        {"nationalPokedexNumber", pokemon.NationalPokedexNumber},
+                        { "regionalPokedexNumber",  pokemon.RegionalPokedexNumber},
+                        {"picture",pokemon.Picture},
+                        {"profileUrl", pokemon.ProfileUrl}
+                    }
+                });
+            }
+
+            return _neo4jGenerator.CreateNodes(nodes);
         }
     }
 }

@@ -7,12 +7,12 @@
             Pokemon = pokemon;
         }
 
-        public Evolution(string requirement, Pokemon pokemon) : this(pokemon)
+        public Evolution(string condition, Pokemon pokemon) : this(pokemon)
         {
-            Requirement = requirement;
+            Condition = condition;
         }
 
-        public string Requirement { get; set; }
+        public string Condition { get; set; }
 
         public Pokemon Pokemon { get; set; }
     }
