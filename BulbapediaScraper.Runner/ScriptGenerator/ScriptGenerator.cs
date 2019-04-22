@@ -1,7 +1,7 @@
 ﻿using BulbapediaScraper.Runner.Models;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace BulbapediaScraper.Runner.ScriptGenerator
 {
