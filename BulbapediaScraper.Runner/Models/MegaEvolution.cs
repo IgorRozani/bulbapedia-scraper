@@ -15,5 +15,7 @@ namespace BulbapediaScraper.Runner.Models
         public MegaStone MegaStone { get; set; }
         public ICollection<Type> Types { get; set; }
         public string Picture { get; set; }
+
+        public string GetCleanName() => Name.Replace(" ", string.Empty);
     }
 }

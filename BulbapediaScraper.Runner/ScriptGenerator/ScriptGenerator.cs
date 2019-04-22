@@ -21,20 +21,23 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             var scriptBuilder = new StringBuilder();
 
             var types = pokemons.SelectMany(p => p.Types).Distinct(new TypeEqualityComparer()).ToList();
-            scriptBuilder.Append(GenerateTypes(types));
+            scriptBuilder.Append(GenerateNodeTypes(types));
 
             scriptBuilder.AppendLine();
 
-            scriptBuilder.AppendLine(GeneratePokemons(pokemons));
+            scriptBuilder.AppendLine(GenerateNodePokemons(pokemons));
 
             scriptBuilder.AppendLine();
             var megaEvolutions = pokemons.SelectMany(p => p.MegaEvolutions).ToList();
-            scriptBuilder.AppendLine(GenerateMegaEvolution(megaEvolutions));
+            scriptBuilder.AppendLine(GenerateNodeMegaEvolution(megaEvolutions));
+
+            scriptBuilder.AppendLine();
+            scriptBuilder.AppendLine(GenerateRelationships(pokemons));
 
             return scriptBuilder.ToString();
         }
 
-        private string GenerateTypes(ICollection<Type> types)
+        private string GenerateNodeTypes(ICollection<Type> types)
         {
             var nodes = new List<Node>();
             foreach (var type in types)
@@ -53,7 +56,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             return _neo4jGenerator.CreateNodes(nodes);
         }
 
-        private string GeneratePokemons(ICollection<Pokemon> pokemons)
+        private string GenerateNodePokemons(ICollection<Pokemon> pokemons)
         {
             var nodes = new List<Node>();
             foreach (var pokemon in pokemons)
@@ -76,7 +79,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             return _neo4jGenerator.CreateNodes(nodes);
         }
 
-        private string GenerateMegaEvolution(ICollection<MegaEvolution> megaEvolutions)
+        private string GenerateNodeMegaEvolution(ICollection<MegaEvolution> megaEvolutions)
         {
             var nodes = new List<Node>();
 
@@ -84,7 +87,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             {
                 nodes.Add(new Node
                 {
-                    Id = megaEvolution.Name.Replace(" ", string.Empty),
+                    Id = megaEvolution.GetCleanName(),
                     Labels = new List<string> { "MegaEvolution" },
                     Properties = new Dictionary<string, object>
                     {
@@ -95,6 +98,54 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             }
 
             return _neo4jGenerator.CreateNodes(nodes);
+        }
+
+        private string GenerateRelationships(ICollection<Pokemon> pokemons)
+        {
+            var relationships = new List<Relationship>();
+
+            foreach (var pokemon in pokemons)
+            {
+                relationships.AddRange(GenerateRelationshipTypes(pokemon.GetCleanName(), pokemon.Types));
+
+                if (pokemon.MegaEvolutions.Any())
+                {
+                    foreach (var megaEvolution in pokemon.MegaEvolutions)
+                    {
+                        relationships.Add(new Relationship
+                        {
+                            Labels = new List<string> { "MegaEvolve" },
+                            NodeId1 = pokemon.GetCleanName(),
+                            NodeId2 = megaEvolution.GetCleanName(),
+                            Properties = new Dictionary<string, object>
+                            {
+                                { "megaStone", megaEvolution.MegaStone.Name },
+                                { "image", megaEvolution.Picture }
+                            }
+                        });
+
+                        relationships.AddRange(GenerateRelationshipTypes(megaEvolution.GetCleanName(), megaEvolution.Types));
+                    }
+                }
+            }
+
+            return _neo4jGenerator.CreateRelationships(relationships);
+        }
+
+        private ICollection<Relationship> GenerateRelationshipTypes(string nodeId, ICollection<Type> types)
+        {
+            var relationships = new List<Relationship>();
+
+            foreach (var type in types)
+            {
+                relationships.Add(new Relationship
+                {
+                    Labels = new List<string> { "Is" },
+                    NodeId1 = nodeId,
+                    NodeId2 = type.Name
+                });
+            }
+            return relationships;
         }
     }
 }

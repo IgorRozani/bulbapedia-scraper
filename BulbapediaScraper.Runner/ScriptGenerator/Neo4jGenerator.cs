@@ -75,12 +75,12 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
         public string CreateRelationships(IList<Relationship> relationships)
         {
             var scriptStringBuilder = new StringBuilder();
-            scriptStringBuilder.Append(CREATE);
+            scriptStringBuilder.AppendLine(CREATE);
             foreach (var relationship in relationships)
             {
-                scriptStringBuilder.AppendLine(GenerateRelationship(relationship));
+                scriptStringBuilder.Append(GenerateRelationship(relationship));
                 if (relationship != relationships.LastOrDefault())
-                    scriptStringBuilder.Append(", ");
+                    scriptStringBuilder.AppendLine(", ");
             }
             return scriptStringBuilder.ToString();
         }

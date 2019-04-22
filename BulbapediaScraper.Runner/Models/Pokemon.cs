@@ -40,7 +40,8 @@ namespace BulbapediaScraper.Runner.Models
                 .Replace(".", string.Empty)
                 .Replace("♀", "F")
                 .Replace("♂", "M")
-                .Replace("'",string.Empty);
+                .Replace("'",string.Empty)
+                .Replace(":", string.Empty);
         }
     }
 }
