@@ -62,8 +62,16 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
 
                     if (pokemonList.ContainsKey(nationalPokedexNumber))
                     {
-                        pokemonList[nationalPokedexNumber].RegionalVariants.Add(
-                            new RegionalVariant(UrlHelper.GetImageFullPath(picture), types));
+                        var pictureUrl = UrlHelper.GetImageFullPath(picture);
+                        if (nationalPokedexNumber > 151)
+                        {
+                            pokemonList[nationalPokedexNumber].Formes.Add(new Forme(pictureUrl, types));
+                        }
+                        else
+                        {
+                            pokemonList[nationalPokedexNumber].RegionalVariants.Add(
+                               new RegionalVariant(pictureUrl, types));
+                        }
                     }
                     else
                     {
