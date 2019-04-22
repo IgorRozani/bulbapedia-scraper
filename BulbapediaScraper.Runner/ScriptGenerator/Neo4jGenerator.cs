@@ -8,21 +8,24 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 {
     public class Neo4jGenerator
     {
+        private const string CREATE = "CREATE ";
+        private const string SCRIPT_END = ";";
+
         public string CreateNodes(IList<Node> nodes)
         {
             var scriptStringBuilder = new StringBuilder();
-            scriptStringBuilder.Append("CREATE ");
-            foreach(var node in nodes)
+            scriptStringBuilder.Append(CREATE);
+            foreach (var node in nodes)
             {
                 scriptStringBuilder.AppendLine(GenerateNode(node));
                 if (node != nodes.LastOrDefault())
                     scriptStringBuilder.Append(", ");
             }
-            return scriptStringBuilder.Append(";").ToString();
+            return scriptStringBuilder.Append(SCRIPT_END).ToString();
         }
 
         public string CreateNode(Node node) =>
-            "CREATE " + GenerateNode(node) + ";";
+            CREATE + GenerateNode(node) + SCRIPT_END;
 
         private string GenerateNode(Node node)
         {
@@ -66,10 +69,11 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             return scriptBuilder.ToString();
         }
 
+
         public string CreateRelationships(IList<Relationship> relationships)
         {
             var scriptStringBuilder = new StringBuilder();
-            scriptStringBuilder.Append("CREATE ");
+            scriptStringBuilder.Append(CREATE);
             foreach (var relationship in relationships)
             {
                 scriptStringBuilder.AppendLine(GenerateRelationship(relationship));
@@ -80,7 +84,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
         }
 
         public string CreateRelationship(Relationship relationship) =>
-        "CREATE " + GenerateRelationship(relationship) + ";";
+            CREATE + GenerateRelationship(relationship) + SCRIPT_END;
 
         private string GenerateRelationship(Relationship relationship)
         {
