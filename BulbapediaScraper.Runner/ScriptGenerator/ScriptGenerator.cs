@@ -14,7 +14,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             _neo4jGenerator = new Neo4jGenerator();
         }
 
-        private Neo4jGenerator _neo4jGenerator;
+        private readonly Neo4jGenerator _neo4jGenerator;
 
         public string Generate(ICollection<Pokemon> pokemons)
         {
