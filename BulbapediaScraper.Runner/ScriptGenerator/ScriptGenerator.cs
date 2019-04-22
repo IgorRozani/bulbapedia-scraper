@@ -27,6 +27,10 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
             scriptBuilder.AppendLine(GeneratePokemons(pokemons));
 
+            scriptBuilder.AppendLine();
+            var megaEvolutions = pokemons.SelectMany(p => p.MegaEvolutions).ToList();
+            scriptBuilder.AppendLine(GenerateMegaEvolution(megaEvolutions));
+
             return scriptBuilder.ToString();
         }
 
@@ -65,6 +69,27 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                         { "regionalPokedexNumber",  pokemon.RegionalPokedexNumber},
                         {"picture",pokemon.Picture},
                         {"profileUrl", pokemon.ProfileUrl}
+                    }
+                });
+            }
+
+            return _neo4jGenerator.CreateNodes(nodes);
+        }
+
+        private string GenerateMegaEvolution(ICollection<MegaEvolution> megaEvolutions)
+        {
+            var nodes = new List<Node>();
+
+            foreach (var megaEvolution in megaEvolutions)
+            {
+                nodes.Add(new Node
+                {
+                    Id = megaEvolution.Name.Replace(" ", string.Empty),
+                    Labels = new List<string> { "MegaEvolution" },
+                    Properties = new Dictionary<string, object>
+                    {
+                        { "name", megaEvolution.Name },
+                        { "picture", megaEvolution.Picture }
                     }
                 });
             }
