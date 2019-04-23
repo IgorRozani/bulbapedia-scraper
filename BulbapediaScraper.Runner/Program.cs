@@ -33,8 +33,8 @@ namespace BulbapediaScraper.Runner
 
             var scrapers = new List<IListScraper>
             {
-                new EvolutionList(htmlWeb),
-                new MegaEvolutionList(htmlWeb)
+                new MegaEvolutionList(htmlWeb),
+                new EvolutionList(htmlWeb)
             };
             foreach (var scraper in scrapers)
             {

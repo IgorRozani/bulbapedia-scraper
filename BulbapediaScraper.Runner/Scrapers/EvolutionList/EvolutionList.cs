@@ -58,8 +58,8 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                                     form2Name.Append(" ").Append(element.InnerText);
 
                                 pokemon1 = pokemonList.FirstOrDefault(p => p.Name == "Unown");
-                                pokemon1.Formes.Add(new Forme(form1Name.ToString().Trim(), form1Picture));
-                                pokemon1.Formes.Add(new Forme(form2Name.ToString().Trim(), form2Picture));
+                                pokemon1.Formes.Add(new Forme(form1Name.ToString().Trim(), form1Picture, new List<Type> { new Type("Psychic") }));
+                                pokemon1.Formes.Add(new Forme(form2Name.ToString().Trim(), form2Picture, new List<Type> { new Type("Psychic") }));
 
                                 if (rollCollumns.Count == 8)
                                 {
@@ -67,7 +67,7 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                                     var form3Name = new StringBuilder();
                                     foreach (var element in rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.Pokemon3Name).SelectNodes("a/span"))
                                         form3Name.Append(" ").Append(element.InnerText);
-                                    pokemon1.Formes.Add(new Forme(form3Name.ToString().Trim(), form3Picture));
+                                    pokemon1.Formes.Add(new Forme(form3Name.ToString().Trim(), form3Picture, new List<Type> { new Type("Psychic") }));
                                 }
                             }
                             else
@@ -77,7 +77,8 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
 
                                 pokemon1 = pokemonList.FirstOrDefault(p => p.Name == pokemon1Name);
                                 pokemon2 = pokemonList.FirstOrDefault(p => p.Name == pokemon2Name);
-                                pokemon1.Evolutions.Add(new Evolution(condition1, pokemon2));
+                                if (!pokemon1.Evolutions.Any(e => e.Pokemon.Name == pokemon2.Name))
+                                    pokemon1.Evolutions.Add(new Evolution(condition1, pokemon2));
 
                                 if (rollCollumns.Count == 8)
                                 {
@@ -85,7 +86,8 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                                     var condition2 = rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.ConditionEvolution2).InnerText.RemoveSpecialCharacter();
 
                                     var pokemon3 = pokemonList.FirstOrDefault(p => p.Name == pokemon3Name);
-                                    pokemon2.Evolutions.Add(new Evolution(condition2, pokemon3));
+                                    if (!pokemon2.Evolutions.Any(e => e.Pokemon.Name == pokemon3.Name))
+                                        pokemon2.Evolutions.Add(new Evolution(condition2, pokemon3));
                                 }
                             }
                         }
@@ -95,13 +97,15 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                             var pokemon2Name = rollCollumns.GetByIndex(MultipleFirstAndSecondEvolutionRowIndex.Pokemon2Name).SelectSingleNode("a/span").InnerText;
 
                             pokemon2 = pokemonList.FirstOrDefault(p => p.Name == pokemon2Name);
-                            pokemon1.Evolutions.Add(new Evolution(condition1, pokemon2));
+                            if(!pokemon1.Evolutions.Any(e => e.Pokemon.Name == pokemon2.Name))
+                                pokemon1.Evolutions.Add(new Evolution(condition1, pokemon2));
 
                             var condition2 = rollCollumns.GetByIndex(MultipleFirstAndSecondEvolutionRowIndex.ConditionEvolution2).InnerText.RemoveSpecialCharacter();
                             var pokemon3Name = rollCollumns.GetByIndex(MultipleFirstAndSecondEvolutionRowIndex.Pokemon2Name).SelectSingleNode("a/span").InnerText;
 
                             var pokemon3 = pokemonList.FirstOrDefault(p => p.Name == pokemon3Name);
-                            pokemon2.Evolutions.Add(new Evolution(condition2, pokemon3));
+                            if (!pokemon2.Evolutions.Any(e => e.Pokemon.Name == pokemon3.Name))
+                                pokemon2.Evolutions.Add(new Evolution(condition2, pokemon3));
                         }
                     }
                     else if (rollCollumns.Count == 4)
@@ -112,19 +116,20 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                             var pokemonName = rollCollumns.GetByIndex(MultipleFirstEvolutionRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
 
                             pokemon2 = pokemonList.FirstOrDefault(p => p.Name == pokemonName);
-                            pokemon1.Evolutions.Add(new Evolution(condition, pokemon2));
+                            if (!pokemon1.Evolutions.Any(e => e.Pokemon.Name == pokemon2.Name))
+                                pokemon1.Evolutions.Add(new Evolution(condition, pokemon2));
                         }
-                        else
-                        {
-                            var pokemonName = rollCollumns.GetByIndex(MultipleFormeRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
-                            var picture = rollCollumns.GetByIndex(MultipleFormeRowIndex.PokemonImage).SelectSingleNode("a/img").Attributes["src"].Value.Trim('/');
+                        // It's a form pokémon, ignore it
+                        //else
+                        //{
+                            //var pokemonName = rollCollumns.GetByIndex(MultipleFormeRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
+                            //var picture = rollCollumns.GetByIndex(MultipleFormeRowIndex.PokemonImage).SelectSingleNode("a/img").Attributes["src"].Value.Trim('/');
 
-                            var formeRow = rollCollumns.GetByIndex(MultipleFormeRowIndex.Forme);
-                            var forme = formeRow.SelectSingleNode("a") != null ? formeRow.SelectSingleNode("a").InnerText : formeRow.InnerText;
+                            //var formeRow = rollCollumns.GetByIndex(MultipleFormeRowIndex.Forme);
+                            //var forme = formeRow.SelectSingleNode("a") != null ? formeRow.SelectSingleNode("a").InnerText : formeRow.InnerText;
 
-                            pokemonList.FirstOrDefault(p => p.Name == pokemonName)?.Formes.Add(new Forme(forme.RemoveSpecialCharacter(), UrlHelper.GetImageFullPath(picture)));
-                        }
-
+                            //pokemonList.FirstOrDefault(p => p.Name == pokemonName)?.Formes.Add(new Forme(forme.RemoveSpecialCharacter(), UrlHelper.GetImageFullPath(picture)));
+                        //}
                     }
                     else if (rollCollumns.Count == 3)
                     {
@@ -134,7 +139,8 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                             var pokemonName = rollCollumns.GetByIndex(MultipleSecondEvolutionRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
 
                             var pokemon3 = pokemonList.FirstOrDefault(p => p.Name == pokemonName);
-                            pokemon2.Evolutions.Add(new Evolution(condition, pokemon3));
+                            if (!pokemon2.Evolutions.Any(e => e.Pokemon.Name == pokemon3.Name))
+                                pokemon2.Evolutions.Add(new Evolution(condition, pokemon3));
                         }
                         else
                         {

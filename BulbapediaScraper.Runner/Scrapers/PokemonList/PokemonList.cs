@@ -63,15 +63,14 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
                     if (pokemonList.ContainsKey(nationalPokedexNumber))
                     {
                         var pictureUrl = UrlHelper.GetImageFullPath(picture);
-                        if (nationalPokedexNumber > 151)
-                        {
-                            pokemonList[nationalPokedexNumber].Formes.Add(new Forme(pictureUrl, types));
-                        }
-                        else
+                        if (nationalPokedexNumber <= 151)
                         {
                             pokemonList[nationalPokedexNumber].RegionalVariants.Add(
                                new RegionalVariant(pictureUrl, types));
+                            
                         }
+                        // else is ignored because it's a multi form pokemon
+                        //pokemonList[nationalPokedexNumber].Formes.Add(new Forme(pictureUrl, types));
                     }
                     else
                     {
