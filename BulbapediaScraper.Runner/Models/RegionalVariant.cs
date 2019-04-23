@@ -14,5 +14,7 @@ namespace BulbapediaScraper.Runner.Models
         public string Picture { get; set; }
 
         public ICollection<Type> Types { get; set; }
+
+        public string GetName(string originalPokemon) => originalPokemon + "Alola";
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BulbapediaScraper.Runner.Helpers;
 using BulbapediaScraper.Runner.Models;
 using BulbapediaScraper.Runner.ScriptGenerator.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
         {
             var scriptBuilder = new StringBuilder();
 
+            // Nodes
             var types = pokemons.SelectMany(p => p.Types).Distinct(new TypeEqualityComparer()).ToList();
             scriptBuilder.Append(GenerateNodeTypes(types));
 
@@ -27,9 +29,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
             scriptBuilder.AppendLine(GenerateNodePokemons(pokemons));
 
-            scriptBuilder.AppendLine();
-            var megaEvolutions = pokemons.SelectMany(p => p.MegaEvolutions).ToList();
-            scriptBuilder.AppendLine(GenerateNodeMegaEvolution(megaEvolutions));
+            // Relationships
 
             scriptBuilder.AppendLine();
             scriptBuilder.AppendLine(GenerateRelationships(pokemons));
@@ -37,7 +37,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             return scriptBuilder.ToString();
         }
 
-        private string GenerateNodeTypes(ICollection<Type> types)
+        private string GenerateNodeTypes(ICollection<Models.Type> types)
         {
             var nodes = new List<Node>();
             foreach (var type in types)
@@ -58,34 +58,45 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
         private string GenerateNodePokemons(ICollection<Pokemon> pokemons)
         {
-            var nodes = new List<Node>();
+            var pokemonNodes = new List<Node>();
+            var regionalVarianteNodes = new List<Node>();
+            var megaEvolutionNodes = new List<Node>();
+
             foreach (var pokemon in pokemons)
             {
-                nodes.Add(new Node
+                pokemonNodes.Add(new Node
                 {
                     Id = pokemon.GetCleanName(),
                     Labels = new List<string> { "Pokemon" },
                     Properties = new Dictionary<string, object>
                     {
                         { "name", pokemon.Name },
-                        {"nationalPokedexNumber", pokemon.NationalPokedexNumber},
-                        { "regionalPokedexNumber",  pokemon.RegionalPokedexNumber},
-                        {"picture",pokemon.Picture},
-                        {"profileUrl", pokemon.ProfileUrl}
+                        { "nationalPokedexNumber", pokemon.NationalPokedexNumber },
+                        { "regionalPokedexNumber",  pokemon.RegionalPokedexNumber },
+                        { "picture",pokemon.Picture },
+                        { "profileUrl", pokemon.ProfileUrl }
                     }
                 });
+
+                if (pokemon.RegionalVariants.Any())
+                    regionalVarianteNodes.AddRange(GenerateNodesRegionalVariant(pokemon));
+
+                if (pokemon.MegaEvolutions.Any())
+                    megaEvolutionNodes.AddRange(GenerateNodesMegaEvolution(pokemon));
             }
 
-            return _neo4jGenerator.CreateNodes(nodes);
+            return _neo4jGenerator.CreateNodes(pokemonNodes)
+                + Environment.NewLine + Environment.NewLine
+                + _neo4jGenerator.CreateNodes(megaEvolutionNodes)
+                + Environment.NewLine + Environment.NewLine
+                + _neo4jGenerator.CreateNodes(regionalVarianteNodes);
         }
 
-        private string GenerateNodeMegaEvolution(ICollection<MegaEvolution> megaEvolutions)
+        private IEnumerable<Node> GenerateNodesMegaEvolution(Pokemon pokemon)
         {
-            var nodes = new List<Node>();
-
-            foreach (var megaEvolution in megaEvolutions)
+            foreach (var megaEvolution in pokemon.MegaEvolutions)
             {
-                nodes.Add(new Node
+                yield return new Node
                 {
                     Id = megaEvolution.GetCleanName(),
                     Labels = new List<string> { "MegaEvolution" },
@@ -94,10 +105,27 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                         { "name", megaEvolution.Name },
                         { "picture", megaEvolution.Picture }
                     }
-                });
+                };
             }
+        }
 
-            return _neo4jGenerator.CreateNodes(nodes);
+        private IEnumerable<Node> GenerateNodesRegionalVariant(Pokemon pokemon)
+        {
+            foreach (var regionalVariant in pokemon.RegionalVariants)
+            {
+                yield return new Node
+                {
+                    Id = regionalVariant.GetName(pokemon.GetCleanName()),
+                    Labels = new List<string> { "Form" },
+                    Properties = new Dictionary<string, object>
+                    {
+                        { "name", pokemon.Name },
+                        { "picture", regionalVariant.Picture },
+                        { "isInterchangeable", false },
+                        { "isAlola", true }
+                    }
+                };
+            }
         }
 
         private string GenerateRelationships(ICollection<Pokemon> pokemons)
@@ -127,12 +155,27 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                         relationships.AddRange(GenerateRelationshipTypes(megaEvolution.GetCleanName(), megaEvolution.Types));
                     }
                 }
+
+                if (pokemon.RegionalVariants.Any())
+                {
+                    foreach(var regionalVariant in pokemon.RegionalVariants)
+                    {
+                        relationships.Add(new Relationship
+                        {
+                            Labels = new List<string> { "Has" },
+                            NodeId1 = pokemon.GetCleanName(),
+                            NodeId2 = regionalVariant.GetName(pokemon.GetCleanName())
+                        });
+
+                        relationships.AddRange(GenerateRelationshipTypes(regionalVariant.GetName(pokemon.GetCleanName()), regionalVariant.Types));
+                    }
+                }
             }
 
             return _neo4jGenerator.CreateRelationships(relationships);
         }
 
-        private ICollection<Relationship> GenerateRelationshipTypes(string nodeId, ICollection<Type> types)
+        private ICollection<Relationship> GenerateRelationshipTypes(string nodeId, ICollection<Models.Type> types)
         {
             var relationships = new List<Relationship>();
 
