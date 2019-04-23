@@ -61,6 +61,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             var pokemonNodes = new List<Node>();
             var regionalVarianteNodes = new List<Node>();
             var megaEvolutionNodes = new List<Node>();
+            var formesNodes = new List<Node>();
 
             foreach (var pokemon in pokemons)
             {
@@ -83,13 +84,18 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
                 if (pokemon.MegaEvolutions.Any())
                     megaEvolutionNodes.AddRange(GenerateNodesMegaEvolution(pokemon));
+
+                if (pokemon.Formes.Any())
+                    formesNodes.AddRange(GenerateNodesForm(pokemon));
             }
 
             return _neo4jGenerator.CreateNodes(pokemonNodes)
                 + Environment.NewLine + Environment.NewLine
                 + _neo4jGenerator.CreateNodes(megaEvolutionNodes)
                 + Environment.NewLine + Environment.NewLine
-                + _neo4jGenerator.CreateNodes(regionalVarianteNodes);
+                + _neo4jGenerator.CreateNodes(regionalVarianteNodes)
+                + Environment.NewLine + Environment.NewLine
+                + _neo4jGenerator.CreateNodes(formesNodes);
         }
 
         private IEnumerable<Node> GenerateNodesMegaEvolution(Pokemon pokemon)
@@ -128,6 +134,25 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             }
         }
 
+        private IEnumerable<Node> GenerateNodesForm(Pokemon pokemon)
+        {
+            foreach (var form in pokemon.Formes)
+            {
+                yield return new Node
+                {
+                    Id = form.GetCleanName(),
+                    Labels = new List<string> { "Form" },
+                    Properties = new Dictionary<string, object>
+                    {
+                        { "name", form.Name },
+                        { "picture", form.Picture },
+                        { "isInterchangeable", false },
+                        { "isAlola", false }
+                    }
+                };
+            }
+        }
+
         private string GenerateRelationships(ICollection<Pokemon> pokemons)
         {
             var relationships = new List<Relationship>();
@@ -156,6 +181,23 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                     }
                 }
 
+                if (pokemon.Evolutions.Any())
+                {
+                    foreach(var evolution in pokemon.Evolutions)
+                    {
+                        relationships.Add(new Relationship
+                        {
+                            Labels = new List<string> { "Evolve" },
+                            NodeId1 = pokemon.GetCleanName(),
+                            NodeId2 = evolution.Pokemon.GetCleanName(),
+                            Properties = new Dictionary<string, object>
+                            {
+                                { "condition", evolution.Condition }
+                            }
+                        });
+                    }
+                }
+
                 if (pokemon.RegionalVariants.Any())
                 {
                     foreach(var regionalVariant in pokemon.RegionalVariants)
@@ -168,6 +210,21 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                         });
 
                         relationships.AddRange(GenerateRelationshipTypes(regionalVariant.GetName(pokemon.GetCleanName()), regionalVariant.Types));
+                    }
+                }
+
+                if (pokemon.Formes.Any())
+                {
+                    foreach(var form in pokemon.Formes)
+                    {
+                        relationships.Add(new Relationship
+                        {
+                            Labels = new List<string> { "Has" },
+                            NodeId1 = pokemon.GetCleanName(),
+                            NodeId2 = form.GetCleanName()
+                        });
+
+                        relationships.AddRange(GenerateRelationshipTypes(form.GetCleanName(), form.Types));
                     }
                 }
             }
