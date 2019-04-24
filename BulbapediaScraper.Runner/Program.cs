@@ -1,6 +1,7 @@
 ﻿using BulbapediaScraper.Runner.Helpers;
 using BulbapediaScraper.Runner.Interfaces;
 using BulbapediaScraper.Runner.Scrapers.EvolutionList;
+using BulbapediaScraper.Runner.Scrapers.FormsList;
 using BulbapediaScraper.Runner.Scrapers.MegaEvolutionList;
 using BulbapediaScraper.Runner.Scrapers.PokemonList;
 using HtmlAgilityPack;
@@ -34,7 +35,8 @@ namespace BulbapediaScraper.Runner
             var scrapers = new List<IListScraper>
             {
                 new MegaEvolutionList(htmlWeb),
-                new EvolutionList(htmlWeb)
+                new EvolutionList(htmlWeb),
+                new FormList(htmlWeb)
             };
             foreach (var scraper in scrapers)
             {
@@ -59,6 +61,9 @@ namespace BulbapediaScraper.Runner
 
             if (scraper is MegaEvolutionList)
                 return UrlHelper.GetFullPath(POKEMON_MEGA_EVOLUTION_LIST_PATH);
+
+            if (scraper is FormList)
+                return UrlHelper.GetFullPath(POKEMON_FORMS_LIST_PATH);
 
             return string.Empty;
         }
