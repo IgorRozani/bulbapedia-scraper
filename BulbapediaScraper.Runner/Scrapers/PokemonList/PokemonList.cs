@@ -70,7 +70,7 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
                             
                         }
                         // else is ignored because it's a multi form pokemon
-                        //pokemonList[nationalPokedexNumber].Formes.Add(new Forme(pictureUrl, types));
+                        //pokemonList[nationalPokedexNumber].Forms.Add(new Form(pictureUrl, types));
                     }
                     else
                     {

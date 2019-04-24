@@ -61,7 +61,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             var pokemonNodes = new List<Node>();
             var regionalVarianteNodes = new List<Node>();
             var megaEvolutionNodes = new List<Node>();
-            var formesNodes = new List<Node>();
+            var formsNodes = new List<Node>();
 
             foreach (var pokemon in pokemons)
             {
@@ -85,8 +85,8 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                 if (pokemon.MegaEvolutions.Any())
                     megaEvolutionNodes.AddRange(GenerateNodesMegaEvolution(pokemon));
 
-                if (pokemon.Formes.Any())
-                    formesNodes.AddRange(GenerateNodesForm(pokemon));
+                if (pokemon.Forms.Any())
+                    formsNodes.AddRange(GenerateNodesForm(pokemon));
             }
 
             return _neo4jGenerator.CreateNodes(pokemonNodes)
@@ -95,7 +95,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                 + Environment.NewLine + Environment.NewLine
                 + _neo4jGenerator.CreateNodes(regionalVarianteNodes)
                 + Environment.NewLine + Environment.NewLine
-                + _neo4jGenerator.CreateNodes(formesNodes);
+                + _neo4jGenerator.CreateNodes(formsNodes);
         }
 
         private IEnumerable<Node> GenerateNodesMegaEvolution(Pokemon pokemon)
@@ -136,7 +136,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
         private IEnumerable<Node> GenerateNodesForm(Pokemon pokemon)
         {
-            foreach (var form in pokemon.Formes)
+            foreach (var form in pokemon.Forms)
             {
                 yield return new Node
                 {
@@ -213,9 +213,9 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                     }
                 }
 
-                if (pokemon.Formes.Any())
+                if (pokemon.Forms.Any())
                 {
-                    foreach(var form in pokemon.Formes)
+                    foreach(var form in pokemon.Forms)
                     {
                         relationships.Add(new Relationship
                         {

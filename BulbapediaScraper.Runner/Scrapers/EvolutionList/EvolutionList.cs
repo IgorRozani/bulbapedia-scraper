@@ -58,8 +58,8 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                                     form2Name.Append(" ").Append(element.InnerText);
 
                                 pokemon1 = pokemonList.FirstOrDefault(p => p.Name == "Unown");
-                                pokemon1.Formes.Add(new Forme(form1Name.ToString().Trim(), form1Picture, new List<Type> { new Type("Psychic") }));
-                                pokemon1.Formes.Add(new Forme(form2Name.ToString().Trim(), form2Picture, new List<Type> { new Type("Psychic") }));
+                                pokemon1.Forms.Add(new Form(form1Name.ToString().Trim(), form1Picture, new List<Type> { new Type("Psychic") }));
+                                pokemon1.Forms.Add(new Form(form2Name.ToString().Trim(), form2Picture, new List<Type> { new Type("Psychic") }));
 
                                 if (rollCollumns.Count == 8)
                                 {
@@ -67,7 +67,7 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                                     var form3Name = new StringBuilder();
                                     foreach (var element in rollCollumns.GetByIndex(ThreeOrTwoEvolutionsRowIndex.Pokemon3Name).SelectNodes("a/span"))
                                         form3Name.Append(" ").Append(element.InnerText);
-                                    pokemon1.Formes.Add(new Forme(form3Name.ToString().Trim(), form3Picture, new List<Type> { new Type("Psychic") }));
+                                    pokemon1.Forms.Add(new Form(form3Name.ToString().Trim(), form3Picture, new List<Type> { new Type("Psychic") }));
                                 }
                             }
                             else
@@ -122,13 +122,13 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
                         // It's a form pokémon, ignore it
                         //else
                         //{
-                            //var pokemonName = rollCollumns.GetByIndex(MultipleFormeRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
-                            //var picture = rollCollumns.GetByIndex(MultipleFormeRowIndex.PokemonImage).SelectSingleNode("a/img").Attributes["src"].Value.Trim('/');
+                            //var pokemonName = rollCollumns.GetByIndex(MultipleFormRowIndex.PokemonName).SelectSingleNode("a/span").InnerText;
+                            //var picture = rollCollumns.GetByIndex(MultipleFormRowIndex.PokemonImage).SelectSingleNode("a/img").Attributes["src"].Value.Trim('/');
 
-                            //var formeRow = rollCollumns.GetByIndex(MultipleFormeRowIndex.Forme);
-                            //var forme = formeRow.SelectSingleNode("a") != null ? formeRow.SelectSingleNode("a").InnerText : formeRow.InnerText;
+                            //var formRow = rollCollumns.GetByIndex(MultipleFormRowIndex.Form);
+                            //var form = formRow.SelectSingleNode("a") != null ? formeRow.SelectSingleNode("a").InnerText : formRow.InnerText;
 
-                            //pokemonList.FirstOrDefault(p => p.Name == pokemonName)?.Formes.Add(new Forme(forme.RemoveSpecialCharacter(), UrlHelper.GetImageFullPath(picture)));
+                            //pokemonList.FirstOrDefault(p => p.Name == pokemonName)?.Forms.Add(new Form(form.RemoveSpecialCharacter(), UrlHelper.GetImageFullPath(picture)));
                         //}
                     }
                     else if (rollCollumns.Count == 3)

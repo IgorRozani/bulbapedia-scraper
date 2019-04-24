@@ -2,21 +2,21 @@
 
 namespace BulbapediaScraper.Runner.Models
 {
-    public class Forme
+    public class Form
     {
-        public Forme(string name, string picture)
+        public Form(string name, string picture)
         {
             Name = name;
             Picture = picture;
         }
 
-        public Forme(string picture, ICollection<Type> types)
+        public Form(string picture, ICollection<Type> types)
         {
             Picture = picture;
             Types = types;
         }
 
-        public Forme(string name, string picture, ICollection<Type> types) : this(name,picture)
+        public Form(string name, string picture, ICollection<Type> types) : this(name,picture)
         {
             Types = types;
         }
