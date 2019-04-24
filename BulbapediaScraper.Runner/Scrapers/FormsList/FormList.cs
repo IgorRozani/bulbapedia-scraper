@@ -83,30 +83,44 @@ namespace BulbapediaScraper.Runner.Scrapers.FormsList
                         foreach (var td in roll.SelectNodes("td"))
                         {
                             var formName = td.InnerText.Split("&#160;")[0].Trim();
-                            var img = td.SelectSingleNode("a/img");
-                            var formPicture = img.Attributes["src"].Value.Trim('/');
-                            int pokemonNumber;
-                            var imgAlt = img.Attributes["alt"].Value;
-                            if (imgAlt.StartsWith("Spr 7s 716"))
-                                pokemonNumber = 716;
-                            else if (imgAlt.EndsWith("Magearna M19.png"))
-                                pokemonNumber = 801;
-                            else
-                                pokemonNumber = Convert.ToInt32(imgAlt.Substring(0, 3));
-                            var types = new List<Models.Type>();
-                            var rollsTypes = td.SelectSingleNode("small");
-                            if (rollsTypes != null)
+                            if (string.IsNullOrEmpty(formName))
                             {
-                                foreach (var rollTypes in rollsTypes.SelectNodes("span/a/span"))
-                                    types.Add(new Models.Type(rollTypes.InnerText.Replace("&#160;", string.Empty)));
-                            }else if(pokemonNumber != 718)
-                            {
-                                types.Add(new Models.Type(formName));
+                                formName = td.SelectSingleNode("span/a/span").InnerText.Replace("&#160;", string.Empty).Trim();
                             }
 
-                            var pokemon = pokemonList.FirstOrDefault(p => p.NationalPokedexNumber == pokemonNumber);
-                            if (!pokemon.Forms.Any(f => f.Name == formName))
-                                pokemon.Forms.Add(new Form(formName, UrlHelper.GetImageFullPath(formPicture), types));
+                            var imgs = td.SelectNodes("a/img");
+
+                            for(var i = 0; i < imgs.Count; i++)
+                            {
+                                var formPicture = imgs[i].Attributes["src"].Value.Trim('/');
+                                int pokemonNumber;
+                                var imgAlt = imgs[i].Attributes["alt"].Value;
+                                if (imgAlt.StartsWith("Spr 7s 716"))
+                                    pokemonNumber = 716;
+                                else if (imgAlt.EndsWith("Magearna M19.png"))
+                                    pokemonNumber = 801;
+                                else
+                                    pokemonNumber = Convert.ToInt32(imgAlt.Substring(0, 3));
+                                var types = new List<Models.Type>();
+                                var rollsTypes = td.SelectNodes("small");
+                                if (rollsTypes != null)
+                                {
+                                    foreach (var rollTypes in rollsTypes[i].SelectNodes("span/a/span"))
+                                        types.Add(new Models.Type(rollTypes.InnerText.Replace("&#160;", string.Empty)));
+                                }
+                                else if (pokemonNumber != 718)
+                                {
+                                    types.Add(new Models.Type(formName));
+                                }
+
+                                var pokemon = pokemonList.FirstOrDefault(p => p.NationalPokedexNumber == pokemonNumber);
+                                if (!pokemon.Forms.Any(f => f.Name == formName))
+                                    pokemon.Forms.Add(new Form(formName, UrlHelper.GetImageFullPath(formPicture), types));
+
+
+                            }
+
+                            
                         }
                     }
                 }
