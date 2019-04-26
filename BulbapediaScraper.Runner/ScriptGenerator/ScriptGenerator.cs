@@ -17,6 +17,22 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
         private readonly Neo4jGenerator _neo4jGenerator;
 
+        private readonly List<int> NON_SWITCHABLE_FORMS = new List<int>
+        {
+            413,
+            422,
+            423,
+            550,
+            666,
+            669,
+            670,
+            671,
+            710,
+            711,
+            745,
+            801
+        };
+
         public string Generate(ICollection<Pokemon> pokemons)
         {
             var scriptBuilder = new StringBuilder();
@@ -146,7 +162,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                     {
                         { "name", form.Name },
                         { "picture", form.Picture },
-                        { "isInterchangeable", false },
+                        { "isInterchangeable", !NON_SWITCHABLE_FORMS.Contains(pokemon.NationalPokedexNumber) },
                         { "isAlola", false }
                     }
                 };
