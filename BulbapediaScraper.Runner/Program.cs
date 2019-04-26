@@ -7,6 +7,7 @@ using BulbapediaScraper.Runner.Scrapers.PokemonList;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace BulbapediaScraper.Runner
 {
@@ -22,6 +23,17 @@ namespace BulbapediaScraper.Runner
         static void Main(string[] args)
         {
             Console.WriteLine("BulbapediaScraper was initialized");
+            Console.WriteLine();
+
+            Console.WriteLine("Inform the path and file name:");
+            var path = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(path))
+            {
+                Console.WriteLine("Invalid path");
+                return;
+            }
+
             Console.WriteLine();
 
             var htmlWeb = new HtmlWeb();
@@ -47,6 +59,9 @@ namespace BulbapediaScraper.Runner
 
             Console.WriteLine("Generating script");
             var script = new ScriptGenerator.ScriptGenerator().Generate(pokemonList);
+
+            Console.WriteLine("Saving file");
+            File.WriteAllText(path, script);
 
             Console.WriteLine();
             Console.WriteLine("BulbapediaScraper was finalized");
