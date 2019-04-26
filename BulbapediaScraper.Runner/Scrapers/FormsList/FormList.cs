@@ -69,15 +69,39 @@ namespace BulbapediaScraper.Runner.Scrapers.FormsList
 
                 if (firstRoll.SelectNodes("th") != null)
                 {
-
+                    // do nothing
+                    continue;
                 }
-                else if (firstRoll.SelectNodes("td/table") != null)
-                {
 
-                }
-                else
+                foreach (var roll in rolls)
                 {
-                    foreach (var roll in rolls)
+                    if (firstRoll.SelectNodes("td/table") != null)
+                    {
+                        foreach (var tableRow in roll.SelectNodes("td/table"))
+                        {
+                            var trs = tableRow.SelectNodes("tr");
+
+                            if (trs.Count <= 3)
+                                throw new Exception();
+
+                            var formImage = trs[0].SelectSingleNode("td/a/img").Attributes["src"].Value.Trim('/');
+                            var pokemonName = trs[1].SelectSingleNode("th/small/a/span").InnerText;
+                            var formName = trs[1].SelectSingleNode("th/small").InnerText.Substring(pokemonName.Length);
+                            if (string.IsNullOrEmpty(formName))
+                                formName = pokemonName;
+
+                            var types = new List<Models.Type>();
+                            foreach (var cellType in trs[2].SelectSingleNode("th/small").SelectNodes("span/a/span"))
+                            {
+                                types.Add(new Models.Type(cellType.InnerText.Replace("&#160;", string.Empty)));
+                            }
+
+                            var pokemon = pokemonList.FirstOrDefault(p => p.Name == pokemonName);
+                            if (!pokemon.Forms.Any(f => f.Name == formName))
+                                pokemon.Forms.Add(new Form(formName, UrlHelper.GetImageFullPath(formImage), types));
+                        }
+                    }
+                    else
                     {
                         // Castform case
                         foreach (var td in roll.SelectNodes("td"))
@@ -90,7 +114,7 @@ namespace BulbapediaScraper.Runner.Scrapers.FormsList
 
                             var imgs = td.SelectNodes("a/img");
 
-                            for(var i = 0; i < imgs.Count; i++)
+                            for (var i = 0; i < imgs.Count; i++)
                             {
                                 var formPicture = imgs[i].Attributes["src"].Value.Trim('/');
                                 int pokemonNumber;
@@ -116,11 +140,7 @@ namespace BulbapediaScraper.Runner.Scrapers.FormsList
                                 var pokemon = pokemonList.FirstOrDefault(p => p.NationalPokedexNumber == pokemonNumber);
                                 if (!pokemon.Forms.Any(f => f.Name == formName))
                                     pokemon.Forms.Add(new Form(formName, UrlHelper.GetImageFullPath(formPicture), types));
-
-
                             }
-
-                            
                         }
                     }
                 }
