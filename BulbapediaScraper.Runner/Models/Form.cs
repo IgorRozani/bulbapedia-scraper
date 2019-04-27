@@ -27,6 +27,6 @@ namespace BulbapediaScraper.Runner.Models
 
         public ICollection<Type> Types { get; set; }
 
-        public string GetCleanName() => Name.Replace(" ", string.Empty);
+        public string GetCleanName() => Name.Replace("!", ((int)'!').ToString()).Replace("?", ((int)'?').ToString()).Replace(" ", string.Empty);
     }
 }
