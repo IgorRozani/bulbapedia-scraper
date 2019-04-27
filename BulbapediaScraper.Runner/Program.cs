@@ -61,7 +61,7 @@ namespace BulbapediaScraper.Runner
             var script = new ScriptGenerator.ScriptGenerator().Generate(pokemonList);
 
             Console.WriteLine("Saving file");
-            File.WriteAllText(path, script);
+            GenerateFile(path, script);
 
             Console.WriteLine();
             Console.WriteLine("BulbapediaScraper was finalized");
@@ -81,6 +81,13 @@ namespace BulbapediaScraper.Runner
                 return UrlHelper.GetFullPath(POKEMON_FORMS_LIST_PATH);
 
             return string.Empty;
+        }
+
+        private static void GenerateFile(string path, string fileContent)
+        {
+            if (File.Exists(path))
+                File.Delete(path);
+            File.WriteAllText(path, fileContent);
         }
     }
 }
