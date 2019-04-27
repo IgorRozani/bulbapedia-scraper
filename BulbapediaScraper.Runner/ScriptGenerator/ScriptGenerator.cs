@@ -39,7 +39,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
             // Nodes
             var types = pokemons.SelectMany(p => p.Types).Distinct(new TypeEqualityComparer()).ToList();
-            scriptBuilder.Append(GenerateNodeTypes(types));
+            scriptBuilder.AppendLine(GenerateNodeTypes(types));
 
             scriptBuilder.AppendLine();
 
@@ -106,11 +106,11 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             }
 
             return _neo4jGenerator.CreateNodes(pokemonNodes)
-                + Environment.NewLine + Environment.NewLine
+                + Environment.NewLine + Environment.NewLine + Environment.NewLine
                 + _neo4jGenerator.CreateNodes(megaEvolutionNodes)
-                + Environment.NewLine + Environment.NewLine
+                + Environment.NewLine + Environment.NewLine + Environment.NewLine
                 + _neo4jGenerator.CreateNodes(regionalVarianteNodes)
-                + Environment.NewLine + Environment.NewLine
+                + Environment.NewLine + Environment.NewLine + Environment.NewLine
                 + _neo4jGenerator.CreateNodes(formsNodes);
         }
 
@@ -156,7 +156,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             {
                 yield return new Node
                 {
-                    Id = form.GetCleanName(),
+                    Id = form.GetName(pokemon.GetCleanName()),
                     Labels = new List<string> { "Form" },
                     Properties = new Dictionary<string, object>
                     {
@@ -171,17 +171,21 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
         private string GenerateRelationships(ICollection<Pokemon> pokemons)
         {
-            var relationships = new List<Relationship>();
+            var typeRelationships = new List<Relationship>();
+            var megaEvolutionRelationships = new List<Relationship>();
+            var evolutionRelatioships = new List<Relationship>();
+            var regionalVariantRelationships = new List<Relationship>();
+            var formRelationships = new List<Relationship>();
 
             foreach (var pokemon in pokemons)
             {
-                relationships.AddRange(GenerateRelationshipTypes(pokemon.GetCleanName(), pokemon.Types));
+                typeRelationships.AddRange(GenerateRelationshipTypes(pokemon.GetCleanName(), pokemon.Types));
 
                 if (pokemon.MegaEvolutions.Any())
                 {
                     foreach (var megaEvolution in pokemon.MegaEvolutions)
                     {
-                        relationships.Add(new Relationship
+                        megaEvolutionRelationships.Add(new Relationship
                         {
                             Labels = new List<string> { "MegaEvolve" },
                             NodeId1 = pokemon.GetCleanName(),
@@ -193,7 +197,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                             }
                         });
 
-                        relationships.AddRange(GenerateRelationshipTypes(megaEvolution.GetCleanName(), megaEvolution.Types));
+                        typeRelationships.AddRange(GenerateRelationshipTypes(megaEvolution.GetCleanName(), megaEvolution.Types));
                     }
                 }
 
@@ -201,7 +205,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                 {
                     foreach(var evolution in pokemon.Evolutions)
                     {
-                        relationships.Add(new Relationship
+                        evolutionRelatioships.Add(new Relationship
                         {
                             Labels = new List<string> { "Evolve" },
                             NodeId1 = pokemon.GetCleanName(),
@@ -218,14 +222,14 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                 {
                     foreach(var regionalVariant in pokemon.RegionalVariants)
                     {
-                        relationships.Add(new Relationship
+                        regionalVariantRelationships.Add(new Relationship
                         {
                             Labels = new List<string> { "Has" },
                             NodeId1 = pokemon.GetCleanName(),
                             NodeId2 = regionalVariant.GetName(pokemon.GetCleanName())
                         });
 
-                        relationships.AddRange(GenerateRelationshipTypes(regionalVariant.GetName(pokemon.GetCleanName()), regionalVariant.Types));
+                        typeRelationships.AddRange(GenerateRelationshipTypes(regionalVariant.GetName(pokemon.GetCleanName()), regionalVariant.Types));
                     }
                 }
 
@@ -233,19 +237,27 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                 {
                     foreach(var form in pokemon.Forms)
                     {
-                        relationships.Add(new Relationship
+                        formRelationships.Add(new Relationship
                         {
                             Labels = new List<string> { "Has" },
                             NodeId1 = pokemon.GetCleanName(),
-                            NodeId2 = form.GetCleanName()
+                            NodeId2 = form.GetName(pokemon.GetCleanName())
                         });
 
-                        relationships.AddRange(GenerateRelationshipTypes(form.GetCleanName(), form.Types));
+                        typeRelationships.AddRange(GenerateRelationshipTypes(form.GetName(pokemon.GetCleanName()), form.Types));
                     }
                 }
             }
 
-            return _neo4jGenerator.CreateRelationships(relationships);
+            return _neo4jGenerator.CreateRelationships(evolutionRelatioships)
+                + Environment.NewLine + Environment.NewLine + Environment.NewLine
+                + _neo4jGenerator.CreateRelationships(megaEvolutionRelationships)
+                + Environment.NewLine + Environment.NewLine + Environment.NewLine
+                + _neo4jGenerator.CreateRelationships(regionalVariantRelationships)
+                + Environment.NewLine + Environment.NewLine + Environment.NewLine
+                + _neo4jGenerator.CreateRelationships(formRelationships)
+                + Environment.NewLine + Environment.NewLine + Environment.NewLine
+                + _neo4jGenerator.CreateRelationships(typeRelationships);
         }
 
         private ICollection<Relationship> GenerateRelationshipTypes(string nodeId, ICollection<Models.Type> types)
