@@ -1,5 +1,6 @@
 ﻿using BulbapediaScraper.Runner.Helpers;
 using BulbapediaScraper.Runner.Models;
+using BulbapediaScraper.Runner.ScriptGenerator.Helper;
 using BulbapediaScraper.Runner.ScriptGenerator.Model;
 using System;
 using System.Collections.Generic;
@@ -83,7 +84,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             {
                 pokemonNodes.Add(new Node
                 {
-                    Id = pokemon.GetCleanName(),
+                    Id = ScriptHelper.GetNodeId(pokemon.Name),
                     Labels = new List<string> { "Pokemon" },
                     Properties = new Dictionary<string, object>
                     {
@@ -120,7 +121,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             {
                 yield return new Node
                 {
-                    Id = megaEvolution.GetCleanName(),
+                    Id = ScriptHelper.GetNodeId(megaEvolution.Name),
                     Labels = new List<string> { "MegaEvolution" },
                     Properties = new Dictionary<string, object>
                     {
@@ -137,7 +138,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             {
                 yield return new Node
                 {
-                    Id = regionalVariant.GetName(pokemon.GetCleanName()),
+                    Id = ScriptHelper.GetNodeId(regionalVariant.GetName(pokemon.Name)),
                     Labels = new List<string> { "Form" },
                     Properties = new Dictionary<string, object>
                     {
@@ -156,7 +157,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             {
                 yield return new Node
                 {
-                    Id = form.GetName(pokemon.GetCleanName()),
+                    Id = ScriptHelper.GetNodeId(form.GetName(pokemon.Name)),
                     Labels = new List<string> { "Form" },
                     Properties = new Dictionary<string, object>
                     {
@@ -179,7 +180,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
 
             foreach (var pokemon in pokemons)
             {
-                typeRelationships.AddRange(GenerateRelationshipTypes(pokemon.GetCleanName(), pokemon.Types));
+                typeRelationships.AddRange(GenerateRelationshipTypes(ScriptHelper.GetNodeId(pokemon.Name), pokemon.Types));
 
                 if (pokemon.MegaEvolutions.Any())
                 {
@@ -188,8 +189,8 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                         megaEvolutionRelationships.Add(new Relationship
                         {
                             Labels = new List<string> { "MegaEvolve" },
-                            NodeId1 = pokemon.GetCleanName(),
-                            NodeId2 = megaEvolution.GetCleanName(),
+                            NodeId1 = ScriptHelper.GetNodeId(pokemon.Name),
+                            NodeId2 = ScriptHelper.GetNodeId(megaEvolution.Name),
                             Properties = new Dictionary<string, object>
                             {
                                 { "megaStone", megaEvolution.MegaStone.Name },
@@ -197,7 +198,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                             }
                         });
 
-                        typeRelationships.AddRange(GenerateRelationshipTypes(megaEvolution.GetCleanName(), megaEvolution.Types));
+                        typeRelationships.AddRange(GenerateRelationshipTypes(ScriptHelper.GetNodeId(megaEvolution.Name), megaEvolution.Types));
                     }
                 }
 
@@ -208,8 +209,8 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                         evolutionRelatioships.Add(new Relationship
                         {
                             Labels = new List<string> { "Evolve" },
-                            NodeId1 = pokemon.GetCleanName(),
-                            NodeId2 = evolution.Pokemon.GetCleanName(),
+                            NodeId1 = ScriptHelper.GetNodeId(pokemon.Name),
+                            NodeId2 = ScriptHelper.GetNodeId(evolution.Pokemon.Name),
                             Properties = new Dictionary<string, object>
                             {
                                 { "condition", evolution.Condition }
@@ -225,11 +226,11 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                         regionalVariantRelationships.Add(new Relationship
                         {
                             Labels = new List<string> { "Has" },
-                            NodeId1 = pokemon.GetCleanName(),
-                            NodeId2 = regionalVariant.GetName(pokemon.GetCleanName())
+                            NodeId1 = ScriptHelper.GetNodeId(pokemon.Name),
+                            NodeId2 = regionalVariant.GetName(ScriptHelper.GetNodeId(pokemon.Name))
                         });
 
-                        typeRelationships.AddRange(GenerateRelationshipTypes(regionalVariant.GetName(pokemon.GetCleanName()), regionalVariant.Types));
+                        typeRelationships.AddRange(GenerateRelationshipTypes(ScriptHelper.GetNodeId(regionalVariant.GetName(pokemon.Name)), regionalVariant.Types));
                     }
                 }
 
@@ -240,11 +241,11 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                         formRelationships.Add(new Relationship
                         {
                             Labels = new List<string> { "Has" },
-                            NodeId1 = pokemon.GetCleanName(),
-                            NodeId2 = form.GetName(pokemon.GetCleanName())
+                            NodeId1 = ScriptHelper.GetNodeId(pokemon.Name),
+                            NodeId2 = ScriptHelper.GetNodeId(form.GetName(pokemon.Name))
                         });
 
-                        typeRelationships.AddRange(GenerateRelationshipTypes(form.GetName(pokemon.GetCleanName()), form.Types));
+                        typeRelationships.AddRange(GenerateRelationshipTypes(ScriptHelper.GetNodeId(form.GetName(pokemon.Name)), form.Types));
                     }
                 }
             }

@@ -32,16 +32,5 @@ namespace BulbapediaScraper.Runner.Models
         public ICollection<Form> Forms { get; set; }
 
         public ICollection<MegaEvolution> MegaEvolutions { get; set; }
-
-        public string GetCleanName()
-        {
-            return Name.Replace(" ", string.Empty)
-                .Replace("-", string.Empty)
-                .Replace(".", string.Empty)
-                .Replace("♀", "F")
-                .Replace("♂", "M")
-                .Replace("'",string.Empty)
-                .Replace(":", string.Empty);
-        }
     }
 }

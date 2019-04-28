@@ -12,10 +12,11 @@ namespace BulbapediaScraper.Runner.Models
         }
 
         public string Name { get; set; }
-        public MegaStone MegaStone { get; set; }
-        public ICollection<Type> Types { get; set; }
-        public string Picture { get; set; }
 
-        public string GetCleanName() => Name.Replace(" ", string.Empty);
+        public MegaStone MegaStone { get; set; }
+
+        public ICollection<Type> Types { get; set; }
+
+        public string Picture { get; set; }
     }
 }

@@ -27,6 +27,6 @@ namespace BulbapediaScraper.Runner.Models
 
         public ICollection<Type> Types { get; set; }
 
-        public string GetName(string pokemonName) => pokemonName + Name.Replace("!", ((int)'!').ToString()).Replace("?", ((int)'?').ToString()).Replace(" ", string.Empty);
+        public string GetName(string pokemonName) => pokemonName + Name;
     }
 }
