@@ -107,7 +107,7 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
                     switch (Type.GetTypeCode(property.Value.GetType()))
                     {
                         case TypeCode.String:
-                            scriptBuilder.Append("'").Append(property.Value).Append("'");
+                            scriptBuilder.Append("\"").Append(property.Value).Append("\"");
                             break;
                         case TypeCode.DateTime:
                             var datetime = (DateTime)property.Value;
