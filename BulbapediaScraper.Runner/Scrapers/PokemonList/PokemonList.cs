@@ -42,7 +42,7 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
 
                     var rollCollumns = roll.SelectNodes("td");
 
-                    var rdex = rollCollumns.GetByIndex(TableIndex.Rdex).InnerText.RemoveSpecialCharacter();
+                    var rdex = rollCollumns.GetByIndex(TableIndex.Rdex).InnerText.RemoveSpecialCharacter().Replace("-", string.Empty);
                     var ndex = rollCollumns.GetByIndex(TableIndex.Ndex).InnerText.RemoveSpecialCharacter();
                     var picture = rollCollumns.GetByIndex(TableIndex.Picture).SelectSingleNode("a/img")
                         .Attributes["src"].Value.Trim('/');
@@ -67,7 +67,7 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
                         {
                             pokemonList[nationalPokedexNumber].RegionalVariants.Add(
                                new RegionalVariant(pictureUrl, types));
-                            
+
                         }
                         // else is ignored because it's a multi form pokemon
                         //pokemonList[nationalPokedexNumber].Forms.Add(new Form(pictureUrl, types));
@@ -77,7 +77,7 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
                         pokemonList.Add(nationalPokedexNumber, new Pokemon
                         {
                             Name = name,
-                            RegionalPokedexNumber = rdex == "&160;" ? null : rdex,
+                            RegionalPokedexNumber = string.IsNullOrEmpty(rdex) || rdex == "&160;" ? null : rdex,
                             NationalPokedexNumber = nationalPokedexNumber,
                             Picture = UrlHelper.GetImageFullPath(picture),
                             Types = types,
