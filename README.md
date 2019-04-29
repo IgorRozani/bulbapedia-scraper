@@ -1,4 +1,4 @@
-# Bulbapedia scraper
+# Bulbapedia scraper [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 Scraper to get data from Bulbapedia and convert to graph database, used to generate the script from the project [pokemon-graph](https://github.com/IgorRozani/pokemon-graph).
 
 ## Pages utilized
