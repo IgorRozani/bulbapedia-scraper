@@ -10,7 +10,7 @@ This scraper get the data from the pages:
 
 ## Scrapper status
 - [x] Pokemon list
-- [ ] Evolution list (70%)
-- [ ] Forms list (30%)
-- [ ] Mega evolution list
+- [x] Evolution list (70%)
+- [x] Forms list (30%)
+- [x] Mega evolution list
 
