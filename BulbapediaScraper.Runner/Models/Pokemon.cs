@@ -11,6 +11,7 @@ namespace BulbapediaScraper.Runner.Models
             Types = new List<Type>();
             Forms = new List<Form>();
             MegaEvolutions = new List<MegaEvolution>();
+            Moves = new List<Move>();
         }
 
         public int NationalPokedexNumber { get; set; }
@@ -32,5 +33,7 @@ namespace BulbapediaScraper.Runner.Models
         public ICollection<Form> Forms { get; set; }
 
         public ICollection<MegaEvolution> MegaEvolutions { get; set; }
+
+        public ICollection<Move> Moves { get; set; }
     }
 }
