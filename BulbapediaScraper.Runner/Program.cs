@@ -3,6 +3,7 @@ using BulbapediaScraper.Runner.Interfaces;
 using BulbapediaScraper.Runner.Scrapers.EvolutionList;
 using BulbapediaScraper.Runner.Scrapers.FormsList;
 using BulbapediaScraper.Runner.Scrapers.MegaEvolutionList;
+using BulbapediaScraper.Runner.Scrapers.MoveList;
 using BulbapediaScraper.Runner.Scrapers.PokemonList;
 using HtmlAgilityPack;
 using System;
@@ -17,6 +18,7 @@ namespace BulbapediaScraper.Runner
         private const string POKEMON_EVOLUTION_LIST_PATH = "List_of_Pokémon_by_evolution_family";
         private const string POKEMON_FORMS_LIST_PATH = "List_of_Pokémon_with_form_differences";
         private const string POKEMON_MEGA_EVOLUTION_LIST_PATH = "Mega_Evolution";
+        private const string POKEMON_MOVES_LIST_PATH = "List_of_moves";
 
         private static HtmlWeb _htmlWeb;
 
@@ -48,7 +50,8 @@ namespace BulbapediaScraper.Runner
             {
                 new MegaEvolutionList(htmlWeb),
                 new EvolutionList(htmlWeb),
-                new FormList(htmlWeb)
+                new FormList(htmlWeb),
+                new MoveList(htmlWeb)
             };
             foreach (var scraper in scrapers)
             {
@@ -71,16 +74,19 @@ namespace BulbapediaScraper.Runner
 
         private static string GetScraperUrl(IListScraper scraper)
         {
-            if (scraper is EvolutionList)
-                return UrlHelper.GetFullPath(POKEMON_EVOLUTION_LIST_PATH);
-
-            if (scraper is MegaEvolutionList)
-                return UrlHelper.GetFullPath(POKEMON_MEGA_EVOLUTION_LIST_PATH);
-
-            if (scraper is FormList)
-                return UrlHelper.GetFullPath(POKEMON_FORMS_LIST_PATH);
-
-            return string.Empty;
+            switch (scraper)
+            {
+                case EvolutionList _:
+                    return UrlHelper.GetFullPath(POKEMON_EVOLUTION_LIST_PATH);
+                case MegaEvolutionList _:
+                    return UrlHelper.GetFullPath(POKEMON_MEGA_EVOLUTION_LIST_PATH);
+                case FormList _:
+                    return UrlHelper.GetFullPath(POKEMON_FORMS_LIST_PATH);
+                case MoveList _:
+                    return UrlHelper.GetFullPath(POKEMON_MOVES_LIST_PATH);
+                default:
+                    throw new ArgumentException("Invalid scraper type");
+            }
         }
 
         private static void GenerateFile(string path, string fileContent)
