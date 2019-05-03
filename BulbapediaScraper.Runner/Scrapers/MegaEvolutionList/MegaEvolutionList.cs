@@ -10,14 +10,11 @@ using System.Linq;
 
 namespace BulbapediaScraper.Runner.Scrapers.MegaEvolutionList
 {
-    public class MegaEvolutionList : IListScraper
+    public class MegaEvolutionList : BaseScraper, IListScraper
     {
-        public MegaEvolutionList(HtmlWeb htmlWeb)
+        public MegaEvolutionList(HtmlWeb htmlWeb) : base (htmlWeb)
         {
-            _htmlWeb = htmlWeb;
         }
-
-        private HtmlWeb _htmlWeb;
 
         public void Scrape(string url, ICollection<Pokemon> pokemonList)
         {

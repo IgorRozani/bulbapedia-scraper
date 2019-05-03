@@ -1,5 +1,4 @@
 ﻿using BulbapediaScraper.Runner.Extensions;
-using BulbapediaScraper.Runner.Helpers;
 using BulbapediaScraper.Runner.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using BulbapediaScraper.Runner.Scrapers.EvolutionList.Enums;
@@ -10,14 +9,11 @@ using System.Text;
 
 namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
 {
-    public class EvolutionList : IListScraper
+    public class EvolutionList : BaseScraper, IListScraper
     {
-        public EvolutionList(HtmlWeb htmlWeb)
+        public EvolutionList(HtmlWeb htmlWeb) : base(htmlWeb)
         {
-            _htmlWeb = htmlWeb;
         }
-
-        private HtmlWeb _htmlWeb;
 
         public void Scrape(string url, ICollection<Pokemon> pokemonList)
         {

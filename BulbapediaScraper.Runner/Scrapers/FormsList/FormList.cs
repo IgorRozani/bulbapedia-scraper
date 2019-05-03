@@ -8,14 +8,11 @@ using System.Linq;
 
 namespace BulbapediaScraper.Runner.Scrapers.FormsList
 {
-    public class FormList : IListScraper
+    public class FormList : BaseScraper, IListScraper
     {
-        public FormList(HtmlWeb htmlWeb)
+        public FormList(HtmlWeb htmlWeb) : base(htmlWeb)
         {
-            _htmlWeb = htmlWeb;
         }
-
-        private HtmlWeb _htmlWeb;
 
         private readonly List<string> _ignoreLines = new List<string>
         {

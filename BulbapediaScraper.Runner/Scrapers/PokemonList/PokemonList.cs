@@ -9,14 +9,11 @@ using System.Linq;
 
 namespace BulbapediaScraper.Runner.Scrapers.PokemonList
 {
-    public class PokemonList : IPokemonListScraper
+    public class PokemonList : BaseScraper, IPokemonListScraper
     {
-        public PokemonList(HtmlWeb htmlWeb)
+        public PokemonList(HtmlWeb htmlWeb) : base(htmlWeb)
         {
-            _htmlWeb = htmlWeb;
         }
-
-        private HtmlWeb _htmlWeb;
 
         public ICollection<Pokemon> Scrape(string url)
         {
