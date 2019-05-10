@@ -1,14 +1,14 @@
 ﻿using BulbapediaScraper.Runner.Configurations;
-using BulbapediaScraper.Runner.Scrapers.Interfaces;
-using BulbapediaScraper.Runner.Scrapers.Services.EvolutionList;
-using BulbapediaScraper.Runner.Scrapers.Services.FormsList;
-using BulbapediaScraper.Runner.Scrapers.Services.MegaEvolutionList;
-using BulbapediaScraper.Runner.Scrapers.Services.MoveList;
-using BulbapediaScraper.Runner.Scrapers.Services.PokemonList;
-using BulbapediaScraper.Runner.ScriptGenerator;
-using BulbapediaScraper.Runner.ScriptGenerator.Interfaces;
 using BulbapediaScraper.Runner.Services.FileExport.Interfaces;
 using BulbapediaScraper.Runner.Services.FileExport.Services;
+using BulbapediaScraper.Runner.Services.Scrapers.Interfaces;
+using BulbapediaScraper.Runner.Services.Scrapers.Services.EvolutionList;
+using BulbapediaScraper.Runner.Services.Scrapers.Services.FormsList;
+using BulbapediaScraper.Runner.Services.Scrapers.Services.MegaEvolutionList;
+using BulbapediaScraper.Runner.Services.Scrapers.Services.MoveList;
+using BulbapediaScraper.Runner.Services.Scrapers.Services.PokemonList;
+using BulbapediaScraper.Runner.Services.ScriptGenerator.Interfaces;
+using BulbapediaScraper.Runner.Services.ScriptGenerator.Services;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +29,7 @@ namespace BulbapediaScraper.Runner
             Console.WriteLine("BulbapediaScraper was initialized");
             Console.WriteLine();
 
-            var pokemonListScraper = _serviceProvider.GetService<IPokemonListScraper>();
+            var pokemonListScraper = _serviceProvider.GetService<IPokemonList>();
 
             Console.WriteLine("Scraping: {0}", pokemonListScraper.GetName());
 
@@ -75,14 +75,14 @@ namespace BulbapediaScraper.Runner
                 .AddSingleton(bulbapediaConfiguration)
                 .AddSingleton(fileExport)
                 .AddSingleton(htmlWeb)
-                .AddSingleton<IPokemonListScraper, PokemonList>()
+                .AddSingleton<IPokemonList, PokemonList>()
                 .AddSingleton<IEvolutionList, EvolutionList>()
                 .AddSingleton<IFormList, FormList>()
                 .AddSingleton<IMegaEvolutionList, MegaEvolutionList>()
                 .AddSingleton<IMoveList, MoveList>()
                 .AddSingleton<IFileExport, FileExport>()
                 .AddSingleton<INeo4jGenerator, Neo4jGenerator>()
-                .AddSingleton<IScriptGenerator, ScriptGenerator.ScriptGenerator>()
+                .AddSingleton<IScriptGenerator, ScriptGenerator>()
                 .BuildServiceProvider();
         }
     }
