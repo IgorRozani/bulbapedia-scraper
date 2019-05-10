@@ -6,6 +6,6 @@ namespace BulbapediaScraper.Runner.Interfaces
 
     public interface IListScraper : IBaseScraper
     {
-        void Scrape(string url, ICollection<Pokemon> pokemonList);
+        void Scrape(ICollection<Pokemon> pokemonList);
     }
 }

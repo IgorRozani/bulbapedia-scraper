@@ -1,4 +1,5 @@
-﻿using BulbapediaScraper.Runner.Extensions;
+﻿using BulbapediaScraper.Runner.Configurations;
+using BulbapediaScraper.Runner.Extensions;
 using BulbapediaScraper.Runner.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using BulbapediaScraper.Runner.Scrapers.EvolutionList.Enums;
@@ -11,13 +12,13 @@ namespace BulbapediaScraper.Runner.Scrapers.EvolutionList
 {
     public class EvolutionList : BaseScraper, IListScraper
     {
-        public EvolutionList(HtmlWeb htmlWeb) : base(htmlWeb)
+        public EvolutionList(HtmlWeb htmlWeb, BulbapediaConfiguration bulbapediaConfiguration) : base(htmlWeb, bulbapediaConfiguration)
         {
         }
 
-        public void Scrape(string url, ICollection<Pokemon> pokemonList)
+        public void Scrape(ICollection<Pokemon> pokemonList)
         {
-            var htmlPage = _htmlWeb.Load(url);
+            var htmlPage = _htmlWeb.Load(GetSiteFullPath(_bulbapediaConfiguration.EvolutionListPath));
 
             var evolutionTables = htmlPage.DocumentNode.SelectNodes("//body/div[@id='globalWrapper']/div[@id='column-content']/div[@id='content']/div[@id='outercontentbox']/div[@id='contentbox']/div[@id='bodyContent']/div[@id='mw-content-text']/table");
 

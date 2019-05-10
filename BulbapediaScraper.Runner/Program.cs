@@ -1,4 +1,4 @@
-﻿using BulbapediaScraper.Runner.Helpers;
+﻿using BulbapediaScraper.Runner.Configurations;
 using BulbapediaScraper.Runner.Interfaces;
 using BulbapediaScraper.Runner.Scrapers.EvolutionList;
 using BulbapediaScraper.Runner.Scrapers.FormsList;
@@ -6,6 +6,7 @@ using BulbapediaScraper.Runner.Scrapers.MegaEvolutionList;
 using BulbapediaScraper.Runner.Scrapers.MoveList;
 using BulbapediaScraper.Runner.Scrapers.PokemonList;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,16 +15,12 @@ namespace BulbapediaScraper.Runner
 {
     class Program
     {
-        private const string POKEMON_LIST_PATH = "List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number";
-        private const string POKEMON_EVOLUTION_LIST_PATH = "List_of_Pokémon_by_evolution_family";
-        private const string POKEMON_FORMS_LIST_PATH = "List_of_Pokémon_with_form_differences";
-        private const string POKEMON_MEGA_EVOLUTION_LIST_PATH = "Mega_Evolution";
-        private const string POKEMON_MOVES_LIST_PATH = "List_of_moves";
-
-        private static HtmlWeb _htmlWeb;
+        private static BulbapediaConfiguration _bulbapediaConfiguration;
 
         static void Main(string[] args)
         {
+            Configure();
+
             Console.WriteLine("BulbapediaScraper was initialized");
             Console.WriteLine();
 
@@ -40,24 +37,24 @@ namespace BulbapediaScraper.Runner
 
             var htmlWeb = new HtmlWeb();
 
-            IPokemonListScraper pokemonListScraper = new PokemonList(htmlWeb);
+            IPokemonListScraper pokemonListScraper = new PokemonList(htmlWeb, _bulbapediaConfiguration);
 
             Console.WriteLine("Scraping: {0}", pokemonListScraper.GetName());
 
-            var pokemonList = pokemonListScraper.Scrape(UrlHelper.GetFullPath(POKEMON_LIST_PATH));
+            var pokemonList = pokemonListScraper.Scrape();
 
             var scrapers = new List<IListScraper>
             {
-                new MegaEvolutionList(htmlWeb),
-                new EvolutionList(htmlWeb),
-                new FormList(htmlWeb),
-                new MoveList(htmlWeb)
+                new MegaEvolutionList(htmlWeb, _bulbapediaConfiguration),
+                new EvolutionList(htmlWeb, _bulbapediaConfiguration),
+                new FormList(htmlWeb, _bulbapediaConfiguration),
+                new MoveList(htmlWeb, _bulbapediaConfiguration)
             };
             foreach (var scraper in scrapers)
             {
                 Console.WriteLine("Scraping: {0}", scraper.GetName());
 
-                scraper.Scrape(GetScraperUrl(scraper), pokemonList);
+                scraper.Scrape(pokemonList);
             }
 
             Console.WriteLine("Generating script");
@@ -72,28 +69,22 @@ namespace BulbapediaScraper.Runner
             Console.ReadKey();
         }
 
-        private static string GetScraperUrl(IListScraper scraper)
-        {
-            switch (scraper)
-            {
-                case EvolutionList _:
-                    return UrlHelper.GetFullPath(POKEMON_EVOLUTION_LIST_PATH);
-                case MegaEvolutionList _:
-                    return UrlHelper.GetFullPath(POKEMON_MEGA_EVOLUTION_LIST_PATH);
-                case FormList _:
-                    return UrlHelper.GetFullPath(POKEMON_FORMS_LIST_PATH);
-                case MoveList _:
-                    return UrlHelper.GetFullPath(POKEMON_MOVES_LIST_PATH);
-                default:
-                    throw new ArgumentException("Invalid scraper type");
-            }
-        }
-
         private static void GenerateFile(string path, string fileContent)
         {
             if (File.Exists(path))
                 File.Delete(path);
             File.WriteAllText(path, fileContent);
+        }
+
+        private static void Configure()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            var configuration = builder.Build();
+
+            _bulbapediaConfiguration = configuration.GetSection("BulbapediaConfiguration").Get<BulbapediaConfiguration>();
         }
     }
 }

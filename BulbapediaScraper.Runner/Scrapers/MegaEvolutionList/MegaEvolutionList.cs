@@ -1,5 +1,5 @@
-﻿using BulbapediaScraper.Runner.Extensions;
-using BulbapediaScraper.Runner.Helpers;
+﻿using BulbapediaScraper.Runner.Configurations;
+using BulbapediaScraper.Runner.Extensions;
 using BulbapediaScraper.Runner.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using BulbapediaScraper.Runner.Scrapers.MegaEvolutionList.Enums;
@@ -12,13 +12,13 @@ namespace BulbapediaScraper.Runner.Scrapers.MegaEvolutionList
 {
     public class MegaEvolutionList : BaseScraper, IListScraper
     {
-        public MegaEvolutionList(HtmlWeb htmlWeb) : base (htmlWeb)
+        public MegaEvolutionList(HtmlWeb htmlWeb, BulbapediaConfiguration bulbapediaConfiguration) : base(htmlWeb, bulbapediaConfiguration)
         {
         }
 
-        public void Scrape(string url, ICollection<Pokemon> pokemonList)
+        public void Scrape(ICollection<Pokemon> pokemonList)
         {
-            var htmlPage = _htmlWeb.Load(url);
+            var htmlPage = _htmlWeb.Load(GetSiteFullPath(_bulbapediaConfiguration.MegaEvolutionListPath));
 
             var megaEvolutionTables = htmlPage.DocumentNode.SelectNodes("//body/div[@id='globalWrapper']/div[@id='column-content']/div[@id='content']/div[@id='outercontentbox']/div[@id='contentbox']/div[@id='bodyContent']/div[@id='mw-content-text']/table");
 
@@ -72,12 +72,12 @@ namespace BulbapediaScraper.Runner.Scrapers.MegaEvolutionList
                         pokemon.MegaEvolutions.Add(new MegaEvolution
                         {
                             Name = GetMegaEvolutionName(pokemon.Name, megaStoneName),
-                            Picture = UrlHelper.GetImageFullPath(megaEvolutionPicture),
+                            Picture = GetImageFullPath(megaEvolutionPicture),
                             Types = megaEvolutionTypes.Select(m => new Models.Type(m)).ToList(),
                             MegaStone = new MegaStone
                             {
                                 Name = megaStoneName,
-                                Image = UrlHelper.GetImageFullPath(megaStoneImage)
+                                Image = GetImageFullPath(megaStoneImage)
                             }
                         });
                     }
@@ -103,12 +103,12 @@ namespace BulbapediaScraper.Runner.Scrapers.MegaEvolutionList
                         pokemon.MegaEvolutions.Add(new MegaEvolution
                         {
                             Name = GetMegaEvolutionName(pokemon.Name, megaStoneName),
-                            Picture = UrlHelper.GetImageFullPath(megaEvolutionPicture),
+                            Picture = GetImageFullPath(megaEvolutionPicture),
                             Types = megaEvolutionTypes.Select(m => new Models.Type(m)).ToList(),
                             MegaStone = new MegaStone
                             {
                                 Name = megaStoneName,
-                                Image = UrlHelper.GetImageFullPath(megaStoneImage)
+                                Image = GetImageFullPath(megaStoneImage)
                             }
                         });
                     }

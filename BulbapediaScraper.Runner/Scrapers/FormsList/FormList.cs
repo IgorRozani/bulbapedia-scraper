@@ -1,4 +1,4 @@
-﻿using BulbapediaScraper.Runner.Helpers;
+﻿using BulbapediaScraper.Runner.Configurations;
 using BulbapediaScraper.Runner.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using HtmlAgilityPack;
@@ -10,7 +10,7 @@ namespace BulbapediaScraper.Runner.Scrapers.FormsList
 {
     public class FormList : BaseScraper, IListScraper
     {
-        public FormList(HtmlWeb htmlWeb) : base(htmlWeb)
+        public FormList(HtmlWeb htmlWeb, BulbapediaConfiguration bulbapediaConfiguration) : base(htmlWeb, bulbapediaConfiguration)
         {
         }
 
@@ -41,9 +41,9 @@ namespace BulbapediaScraper.Runner.Scrapers.FormsList
 
         public string GetName() => "Form list";
 
-        public void Scrape(string url, ICollection<Pokemon> pokemonList)
+        public void Scrape(ICollection<Pokemon> pokemonList)
         {
-            var htmlPage = _htmlWeb.Load(url);
+            var htmlPage = _htmlWeb.Load(GetSiteFullPath(_bulbapediaConfiguration.FormsListPath));
 
             var formTables = htmlPage.DocumentNode.SelectNodes("//body/div[@id='globalWrapper']/div[@id='column-content']/div[@id='content']/div[@id='outercontentbox']/div[@id='contentbox']/div[@id='bodyContent']/div[@id='mw-content-text']/table");
 
@@ -95,7 +95,7 @@ namespace BulbapediaScraper.Runner.Scrapers.FormsList
 
                             var pokemon = pokemonList.FirstOrDefault(p => p.Name == pokemonName);
                             if (!pokemon.Forms.Any(f => f.Name == formName))
-                                pokemon.Forms.Add(new Form(formName, UrlHelper.GetImageFullPath(formImage), types));
+                                pokemon.Forms.Add(new Form(formName, GetImageFullPath(formImage), types));
                         }
                     }
                     else
@@ -136,7 +136,7 @@ namespace BulbapediaScraper.Runner.Scrapers.FormsList
 
                                 var pokemon = pokemonList.FirstOrDefault(p => p.NationalPokedexNumber == pokemonNumber);
                                 if (!pokemon.Forms.Any(f => f.Name == formName))
-                                    pokemon.Forms.Add(new Form(formName, UrlHelper.GetImageFullPath(formPicture), types));
+                                    pokemon.Forms.Add(new Form(formName, GetImageFullPath(formPicture), types));
                             }
                         }
                     }

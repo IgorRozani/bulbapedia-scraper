@@ -1,5 +1,5 @@
-﻿using BulbapediaScraper.Runner.Helpers;
-using BulbapediaScraper.Runner.Models;
+﻿using BulbapediaScraper.Runner.Models;
+using BulbapediaScraper.Runner.Models.Comparers;
 using BulbapediaScraper.Runner.ScriptGenerator.Helper;
 using BulbapediaScraper.Runner.ScriptGenerator.Model;
 using System;

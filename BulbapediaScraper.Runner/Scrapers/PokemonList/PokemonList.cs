@@ -1,5 +1,5 @@
-﻿using BulbapediaScraper.Runner.Extensions;
-using BulbapediaScraper.Runner.Helpers;
+﻿using BulbapediaScraper.Runner.Configurations;
+using BulbapediaScraper.Runner.Extensions;
 using BulbapediaScraper.Runner.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using BulbapediaScraper.Runner.Scrapers.PokemonList.Enums;
@@ -11,13 +11,13 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
 {
     public class PokemonList : BaseScraper, IPokemonListScraper
     {
-        public PokemonList(HtmlWeb htmlWeb) : base(htmlWeb)
+        public PokemonList(HtmlWeb htmlWeb, BulbapediaConfiguration bulbapediaConfiguration) : base(htmlWeb, bulbapediaConfiguration)
         {
         }
 
-        public ICollection<Pokemon> Scrape(string url)
+        public ICollection<Pokemon> Scrape()
         {
-            var htmlPage = _htmlWeb.Load(url);
+            var htmlPage = _htmlWeb.Load(GetSiteFullPath(_bulbapediaConfiguration.PokemonListPath));
 
             var pokemonTables = htmlPage.DocumentNode.SelectNodes("//body/div[@id='globalWrapper']/div[@id='column-content']/div[@id='content']/div[@id='outercontentbox']/div[@id='contentbox']/div[@id='bodyContent']/div[@id='mw-content-text']/table");
 
@@ -59,7 +59,7 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
 
                     if (pokemonList.ContainsKey(nationalPokedexNumber))
                     {
-                        var pictureUrl = UrlHelper.GetImageFullPath(picture);
+                        var pictureUrl = GetImageFullPath(picture);
                         if (nationalPokedexNumber <= 151)
                         {
                             pokemonList[nationalPokedexNumber].RegionalVariants.Add(
@@ -76,9 +76,9 @@ namespace BulbapediaScraper.Runner.Scrapers.PokemonList
                             Name = name,
                             RegionalPokedexNumber = string.IsNullOrEmpty(rdex) || rdex == "&160;" ? null : rdex,
                             NationalPokedexNumber = nationalPokedexNumber,
-                            Picture = UrlHelper.GetImageFullPath(picture),
+                            Picture = GetImageFullPath(picture),
                             Types = types,
-                            ProfileUrl = UrlHelper.GetFullPath(profileUrl)
+                            ProfileUrl = GetSiteFullPath(profileUrl)
                         });
                     }
                 }
