@@ -1,7 +1,7 @@
 ﻿using BulbapediaScraper.Runner.Models;
 using System.Collections.Generic;
 
-namespace BulbapediaScraper.Runner.Interfaces
+namespace BulbapediaScraper.Runner.Scrapers.Interfaces
 {
     public interface IPokemonListScraper : IBaseScraper
     {

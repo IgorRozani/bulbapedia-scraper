@@ -1,6 +1,6 @@
 ﻿using BulbapediaScraper.Runner.Configurations;
 using BulbapediaScraper.Runner.Extensions;
-using BulbapediaScraper.Runner.Interfaces;
+using BulbapediaScraper.Runner.Scrapers.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using BulbapediaScraper.Runner.Scrapers.MegaEvolutionList.Enums;
 using HtmlAgilityPack;
@@ -8,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BulbapediaScraper.Runner.Scrapers.MegaEvolutionList
+namespace BulbapediaScraper.Runner.Scrapers.Services.MegaEvolutionList
 {
-    public class MegaEvolutionList : BaseScraper, IListScraper
+    public class MegaEvolutionList : BaseScraper, IMegaEvolutionList
     {
         public MegaEvolutionList(HtmlWeb htmlWeb, BulbapediaConfiguration bulbapediaConfiguration) : base(htmlWeb, bulbapediaConfiguration)
         {

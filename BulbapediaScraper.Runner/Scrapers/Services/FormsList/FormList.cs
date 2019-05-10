@@ -1,14 +1,14 @@
 ﻿using BulbapediaScraper.Runner.Configurations;
-using BulbapediaScraper.Runner.Interfaces;
+using BulbapediaScraper.Runner.Scrapers.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BulbapediaScraper.Runner.Scrapers.FormsList
+namespace BulbapediaScraper.Runner.Scrapers.Services.FormsList
 {
-    public class FormList : BaseScraper, IListScraper
+    public class FormList : BaseScraper, IFormList
     {
         public FormList(HtmlWeb htmlWeb, BulbapediaConfiguration bulbapediaConfiguration) : base(htmlWeb, bulbapediaConfiguration)
         {

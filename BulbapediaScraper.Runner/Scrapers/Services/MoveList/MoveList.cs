@@ -1,11 +1,11 @@
 ﻿using BulbapediaScraper.Runner.Configurations;
-using BulbapediaScraper.Runner.Interfaces;
+using BulbapediaScraper.Runner.Scrapers.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using System.Collections.Generic;
 
-namespace BulbapediaScraper.Runner.Scrapers.MoveList
+namespace BulbapediaScraper.Runner.Scrapers.Services.MoveList
 {
-    public class MoveList : BaseScraper, IListScraper
+    public class MoveList : BaseScraper, IMoveList
     {
         public MoveList(HtmlAgilityPack.HtmlWeb htmlWeb, BulbapediaConfiguration bulbapediaConfiguration) : base(htmlWeb, bulbapediaConfiguration)
         {

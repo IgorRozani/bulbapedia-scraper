@@ -1,12 +1,13 @@
 ﻿using BulbapediaScraper.Runner.Configurations;
-using BulbapediaScraper.Runner.Interfaces;
-using BulbapediaScraper.Runner.Scrapers.EvolutionList;
-using BulbapediaScraper.Runner.Scrapers.FormsList;
-using BulbapediaScraper.Runner.Scrapers.MegaEvolutionList;
-using BulbapediaScraper.Runner.Scrapers.MoveList;
-using BulbapediaScraper.Runner.Scrapers.PokemonList;
+using BulbapediaScraper.Runner.Scrapers.Interfaces;
+using BulbapediaScraper.Runner.Scrapers.Services.EvolutionList;
+using BulbapediaScraper.Runner.Scrapers.Services.FormsList;
+using BulbapediaScraper.Runner.Scrapers.Services.MegaEvolutionList;
+using BulbapediaScraper.Runner.Scrapers.Services.MoveList;
+using BulbapediaScraper.Runner.Scrapers.Services.PokemonList;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,7 @@ namespace BulbapediaScraper.Runner
 {
     class Program
     {
-        private static BulbapediaConfiguration _bulbapediaConfiguration;
+        private static ServiceProvider _serviceProvider;
 
         static void Main(string[] args)
         {
@@ -35,9 +36,7 @@ namespace BulbapediaScraper.Runner
 
             Console.WriteLine();
 
-            var htmlWeb = new HtmlWeb();
-
-            IPokemonListScraper pokemonListScraper = new PokemonList(htmlWeb, _bulbapediaConfiguration);
+            var pokemonListScraper = _serviceProvider.GetService<IPokemonListScraper>();
 
             Console.WriteLine("Scraping: {0}", pokemonListScraper.GetName());
 
@@ -45,10 +44,10 @@ namespace BulbapediaScraper.Runner
 
             var scrapers = new List<IListScraper>
             {
-                new MegaEvolutionList(htmlWeb, _bulbapediaConfiguration),
-                new EvolutionList(htmlWeb, _bulbapediaConfiguration),
-                new FormList(htmlWeb, _bulbapediaConfiguration),
-                new MoveList(htmlWeb, _bulbapediaConfiguration)
+                _serviceProvider.GetService<IMegaEvolutionList>(),
+                _serviceProvider.GetService<IEvolutionList>(),
+                _serviceProvider.GetService<IFormList>(),
+                _serviceProvider.GetService<IMoveList>()
             };
             foreach (var scraper in scrapers)
             {
@@ -84,7 +83,19 @@ namespace BulbapediaScraper.Runner
 
             var configuration = builder.Build();
 
-            _bulbapediaConfiguration = configuration.GetSection("BulbapediaConfiguration").Get<BulbapediaConfiguration>();
+            var bulbapediaConfiguration = configuration.GetSection("BulbapediaConfiguration").Get<BulbapediaConfiguration>();
+
+            var htmlWeb = new HtmlWeb();
+
+            _serviceProvider = new ServiceCollection()
+                .AddSingleton(bulbapediaConfiguration)
+                .AddSingleton(htmlWeb)
+                .AddSingleton<IPokemonListScraper, PokemonList>()
+                .AddSingleton<IEvolutionList, EvolutionList>()
+                .AddSingleton<IFormList, FormList>()
+                .AddSingleton<IMegaEvolutionList, MegaEvolutionList>()
+                .AddSingleton<IMoveList, MoveList>()
+                .BuildServiceProvider();
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿using BulbapediaScraper.Runner.Configurations;
 using BulbapediaScraper.Runner.Extensions;
-using BulbapediaScraper.Runner.Interfaces;
+using BulbapediaScraper.Runner.Scrapers.Interfaces;
 using BulbapediaScraper.Runner.Models;
 using BulbapediaScraper.Runner.Scrapers.PokemonList.Enums;
 using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BulbapediaScraper.Runner.Scrapers.PokemonList
+namespace BulbapediaScraper.Runner.Scrapers.Services.PokemonList
 {
     public class PokemonList : BaseScraper, IPokemonListScraper
     {
