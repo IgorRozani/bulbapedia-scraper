@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BulbapediaScraper.Runner.Models
+﻿namespace BulbapediaScraper.Runner.Models
 {
 
     public class Contest
     {
+        public Contest(string name)
+        {
+            Name = name;
+        }
+
         public string Name { get; set; }
     }
 }

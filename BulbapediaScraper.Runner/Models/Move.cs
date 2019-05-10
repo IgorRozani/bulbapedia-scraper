@@ -6,9 +6,10 @@
         public Type Type { get; set; }
         public Category Category { get; set; }
         public Contest Contest { get; set; }
-        public int PowerPoint { get; set; }
-        public int Power { get; set; }
-        public int Acurracy { get; set; }
-
+        public int? PowerPoint { get; set; }
+        public int? Power { get; set; }
+        public decimal? Acurracy { get; set; }
+        public bool IsMysteryDungeonExclusive { get; set; }
+        public bool IsColosseumOrXDExclusive { get; set; }
     }
 }
