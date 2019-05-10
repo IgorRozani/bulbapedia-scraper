@@ -5,6 +5,10 @@ using BulbapediaScraper.Runner.Scrapers.Services.FormsList;
 using BulbapediaScraper.Runner.Scrapers.Services.MegaEvolutionList;
 using BulbapediaScraper.Runner.Scrapers.Services.MoveList;
 using BulbapediaScraper.Runner.Scrapers.Services.PokemonList;
+using BulbapediaScraper.Runner.ScriptGenerator;
+using BulbapediaScraper.Runner.ScriptGenerator.Interfaces;
+using BulbapediaScraper.Runner.Services.FileExport.Interfaces;
+using BulbapediaScraper.Runner.Services.FileExport.Services;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,17 +27,6 @@ namespace BulbapediaScraper.Runner
             Configure();
 
             Console.WriteLine("BulbapediaScraper was initialized");
-            Console.WriteLine();
-
-            Console.WriteLine("Inform the path and file name:");
-            var path = Console.ReadLine();
-
-            if (string.IsNullOrEmpty(path))
-            {
-                Console.WriteLine("Invalid path");
-                return;
-            }
-
             Console.WriteLine();
 
             var pokemonListScraper = _serviceProvider.GetService<IPokemonListScraper>();
@@ -57,22 +50,13 @@ namespace BulbapediaScraper.Runner
             }
 
             Console.WriteLine("Generating script");
-            var script = new ScriptGenerator.ScriptGenerator().Generate(pokemonList);
+            var script = _serviceProvider.GetService<IScriptGenerator>().Generate(pokemonList);
 
             Console.WriteLine("Saving file");
-            GenerateFile(path, script);
+            _serviceProvider.GetService<IFileExport>().Export(script);
 
             Console.WriteLine();
             Console.WriteLine("BulbapediaScraper was finalized");
-
-            Console.ReadKey();
-        }
-
-        private static void GenerateFile(string path, string fileContent)
-        {
-            if (File.Exists(path))
-                File.Delete(path);
-            File.WriteAllText(path, fileContent);
         }
 
         private static void Configure()
@@ -83,18 +67,22 @@ namespace BulbapediaScraper.Runner
 
             var configuration = builder.Build();
 
-            var bulbapediaConfiguration = configuration.GetSection("BulbapediaConfiguration").Get<BulbapediaConfiguration>();
-
+            var bulbapediaConfiguration = configuration.GetSection("bulbapediaConfiguration").Get<BulbapediaConfiguration>();
+            var fileExport = configuration.GetSection("fileExportConfiguration").Get<FileExportConfiguration>();
             var htmlWeb = new HtmlWeb();
 
             _serviceProvider = new ServiceCollection()
                 .AddSingleton(bulbapediaConfiguration)
+                .AddSingleton(fileExport)
                 .AddSingleton(htmlWeb)
                 .AddSingleton<IPokemonListScraper, PokemonList>()
                 .AddSingleton<IEvolutionList, EvolutionList>()
                 .AddSingleton<IFormList, FormList>()
                 .AddSingleton<IMegaEvolutionList, MegaEvolutionList>()
                 .AddSingleton<IMoveList, MoveList>()
+                .AddSingleton<IFileExport, FileExport>()
+                .AddSingleton<INeo4jGenerator, Neo4jGenerator>()
+                .AddSingleton<IScriptGenerator, ScriptGenerator.ScriptGenerator>()
                 .BuildServiceProvider();
         }
     }

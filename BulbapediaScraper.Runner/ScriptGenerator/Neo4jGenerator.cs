@@ -1,4 +1,5 @@
-﻿using BulbapediaScraper.Runner.ScriptGenerator.Model;
+﻿using BulbapediaScraper.Runner.ScriptGenerator.Interfaces;
+using BulbapediaScraper.Runner.ScriptGenerator.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace BulbapediaScraper.Runner.ScriptGenerator
 {
-    public class Neo4jGenerator
+    public class Neo4jGenerator : INeo4jGenerator
     {
         private const string CREATE = "CREATE ";
 

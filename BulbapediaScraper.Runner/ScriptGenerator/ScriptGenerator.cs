@@ -1,6 +1,7 @@
 ﻿using BulbapediaScraper.Runner.Models;
 using BulbapediaScraper.Runner.Models.Comparers;
 using BulbapediaScraper.Runner.ScriptGenerator.Helper;
+using BulbapediaScraper.Runner.ScriptGenerator.Interfaces;
 using BulbapediaScraper.Runner.ScriptGenerator.Model;
 using System;
 using System.Collections.Generic;
@@ -9,14 +10,9 @@ using System.Text;
 
 namespace BulbapediaScraper.Runner.ScriptGenerator
 {
-    public class ScriptGenerator
+    public class ScriptGenerator : IScriptGenerator
     {
-        public ScriptGenerator()
-        {
-            _neo4jGenerator = new Neo4jGenerator();
-        }
-
-        private readonly Neo4jGenerator _neo4jGenerator;
+        private readonly INeo4jGenerator _neo4jGenerator;
 
         private readonly List<int> NON_SWITCHABLE_FORMS = new List<int>
         {
@@ -33,6 +29,11 @@ namespace BulbapediaScraper.Runner.ScriptGenerator
             745,
             801
         };
+
+        public ScriptGenerator(INeo4jGenerator neo4jGenerator)
+        {
+            _neo4jGenerator = neo4jGenerator;
+        }
 
         public string Generate(ICollection<Pokemon> pokemons)
         {
