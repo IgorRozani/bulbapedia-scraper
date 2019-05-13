@@ -39,8 +39,7 @@ namespace BulbapediaScraper.Runner
             {
                 _serviceProvider.GetService<IMegaEvolutionList>(),
                 _serviceProvider.GetService<IEvolutionList>(),
-                _serviceProvider.GetService<IFormList>(),
-                _serviceProvider.GetService<IMoveList>()
+                _serviceProvider.GetService<IFormList>()
             };
             foreach (var scraper in scrapers)
             {
