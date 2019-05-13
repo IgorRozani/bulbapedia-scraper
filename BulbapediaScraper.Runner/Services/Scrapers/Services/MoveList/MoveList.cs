@@ -12,9 +12,12 @@ namespace BulbapediaScraper.Runner.Services.Scrapers.Services.MoveList
     {
         public MoveList(HtmlAgilityPack.HtmlWeb htmlWeb, BulbapediaConfiguration bulbapediaConfiguration) : base(htmlWeb, bulbapediaConfiguration)
         {
+            MovesBy = new List<string>();
         }
 
         public string GetName() => "Move list";
+
+        private List<string> MovesBy;
 
         public void Scrape(ICollection<Pokemon> pokemonList)
         {
@@ -42,7 +45,7 @@ namespace BulbapediaScraper.Runner.Services.Scrapers.Services.MoveList
 
                         var rollCollumns = subTableRoll.SelectNodes("td");
 
-                        if(rollCollumns.Count == 7)
+                        if (rollCollumns.Count == 7)
                         {
                             var moveId = rollCollumns.GetByIndex(ShadowMoveRow.Index).InnerText.RemoveSpecialCharacter();
                             var nameCell = rollCollumns.GetByIndex(ShadowMoveRow.Name).SelectSingleNode("a");
@@ -73,9 +76,9 @@ namespace BulbapediaScraper.Runner.Services.Scrapers.Services.MoveList
                             var nameCell = rollCollumns.GetByIndex(MysteryDungeonMoveRow.Name).SelectSingleNode("a");
                             var name = nameCell.InnerText;
                             var moveLink = nameCell.Attributes["href"].Value.Replace("/wiki/", "");
-                            var type = rollCollumns.GetByIndex(MysteryDungeonMoveRow.Type).SelectSingleNode("a/span").InnerText.Replace("?","");
+                            var type = rollCollumns.GetByIndex(MysteryDungeonMoveRow.Type).SelectSingleNode("a/span").InnerText.Replace("?", "");
                             var powerPointValue = rollCollumns.GetByIndex(MysteryDungeonMoveRow.PowerPoint).InnerText.RemoveSpecialCharacter().Replace("*", "");
-                            var powerValue = rollCollumns.GetByIndex(MysteryDungeonMoveRow.Power).InnerText.RemoveSpecialCharacter().Replace("*", "").Replace("☆","").Replace("?", "");
+                            var powerValue = rollCollumns.GetByIndex(MysteryDungeonMoveRow.Power).InnerText.RemoveSpecialCharacter().Replace("*", "").Replace("☆", "").Replace("?", "");
                             var accuracyValue = rollCollumns.GetByIndex(MysteryDungeonMoveRow.Accuracy).InnerText.RemoveSpecialCharacter().Replace("%", "").Replace("*", "").Replace("☆", "").Replace("?", "");
 
                             var fullMoveLink = GetSiteFullPath(moveLink);
@@ -90,7 +93,7 @@ namespace BulbapediaScraper.Runner.Services.Scrapers.Services.MoveList
                                 IsMysteryDungeonExclusive = true
                             });
                         }
-                        else 
+                        else
                         {
                             var moveId = rollCollumns.GetByIndex(MoveRow.Index).InnerText.RemoveSpecialCharacter();
                             var nameCell = rollCollumns.GetByIndex(MoveRow.Name).SelectSingleNode("a");
@@ -118,6 +121,31 @@ namespace BulbapediaScraper.Runner.Services.Scrapers.Services.MoveList
                         }
                     }
                 }
+            }
+        }
+
+        private void GetPokemons(string url)
+        {
+            var movePage = _htmlWeb.Load(url);
+
+            var movesTable = movePage.DocumentNode.SelectNodes("//body/div[@id='globalWrapper']/div[@id='column-content']/div[@id='content']/div[@id='outercontentbox']/div[@id='contentbox']/div[@id='bodyContent']/div[@id='mw-content-text']/table");
+
+            foreach (var moveTable in movesTable)
+            {
+                var firstTh = moveTable.SelectSingleNode("tr/th");
+                if (firstTh == null || firstTh.InnerText.Trim() != "#")
+                    continue;
+
+                var header = moveTable.PreviousSibling.PreviousSibling;
+                var by = string.Empty;
+                var span = header.SelectSingleNode("span");
+                if (span.InnerText.Contains("by", System.StringComparison.InvariantCultureIgnoreCase))
+                    by = span.SelectSingleNode("a").InnerText;
+                else
+                    by = header.PreviousSibling.PreviousSibling.SelectSingleNode("span/a").InnerText;
+
+                if (!MovesBy.Contains(by))
+                    MovesBy.Add(by);
             }
         }
     }
