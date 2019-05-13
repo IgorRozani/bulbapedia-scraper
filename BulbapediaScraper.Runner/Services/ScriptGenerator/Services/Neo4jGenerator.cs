@@ -37,7 +37,7 @@ namespace BulbapediaScraper.Runner.Services.ScriptGenerator.Services
 
             if (node.Properties.Any())
             {
-                scriptBuilder.Append(" { ");
+                scriptBuilder.Append(" {");
 
                 foreach (var property in node.Properties)
                 {
@@ -99,7 +99,7 @@ namespace BulbapediaScraper.Runner.Services.ScriptGenerator.Services
 
             if (relationship.Properties.Any())
             {
-                scriptBuilder.Append(" { ");
+                scriptBuilder.Append(" {");
 
                 foreach (var property in relationship.Properties)
                 {

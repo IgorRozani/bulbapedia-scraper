@@ -66,7 +66,7 @@ namespace BulbapediaScraper.Runner.Services.ScriptGenerator.Services
                     Labels = new List<string> { "Type" },
                     Properties = new Dictionary<string, object>
                     {
-                        { "Name",type.Name }
+                        { "name",type.Name }
                     }
                 });
             }
@@ -189,7 +189,7 @@ namespace BulbapediaScraper.Runner.Services.ScriptGenerator.Services
                     {
                         megaEvolutionRelationships.Add(new Relationship
                         {
-                            Labels = new List<string> { "MegaEvolve" },
+                            Labels = new List<string> { "MEGA_EVOLVE" },
                             NodeId1 = ScriptHelper.GetNodeId(pokemon.Name),
                             NodeId2 = ScriptHelper.GetNodeId(megaEvolution.Name),
                             Properties = new Dictionary<string, object>
@@ -205,11 +205,11 @@ namespace BulbapediaScraper.Runner.Services.ScriptGenerator.Services
 
                 if (pokemon.Evolutions.Any())
                 {
-                    foreach(var evolution in pokemon.Evolutions)
+                    foreach (var evolution in pokemon.Evolutions)
                     {
                         evolutionRelatioships.Add(new Relationship
                         {
-                            Labels = new List<string> { "Evolve" },
+                            Labels = new List<string> { "EVOLVE" },
                             NodeId1 = ScriptHelper.GetNodeId(pokemon.Name),
                             NodeId2 = ScriptHelper.GetNodeId(evolution.Pokemon.Name),
                             Properties = new Dictionary<string, object>
@@ -222,11 +222,11 @@ namespace BulbapediaScraper.Runner.Services.ScriptGenerator.Services
 
                 if (pokemon.RegionalVariants.Any())
                 {
-                    foreach(var regionalVariant in pokemon.RegionalVariants)
+                    foreach (var regionalVariant in pokemon.RegionalVariants)
                     {
                         regionalVariantRelationships.Add(new Relationship
                         {
-                            Labels = new List<string> { "Has" },
+                            Labels = new List<string> { "HAS" },
                             NodeId1 = ScriptHelper.GetNodeId(pokemon.Name),
                             NodeId2 = regionalVariant.GetName(ScriptHelper.GetNodeId(pokemon.Name))
                         });
@@ -237,11 +237,11 @@ namespace BulbapediaScraper.Runner.Services.ScriptGenerator.Services
 
                 if (pokemon.Forms.Any())
                 {
-                    foreach(var form in pokemon.Forms)
+                    foreach (var form in pokemon.Forms)
                     {
                         formRelationships.Add(new Relationship
                         {
-                            Labels = new List<string> { "Has" },
+                            Labels = new List<string> { "HAS" },
                             NodeId1 = ScriptHelper.GetNodeId(pokemon.Name),
                             NodeId2 = ScriptHelper.GetNodeId(form.GetName(pokemon.Name))
                         });
@@ -270,7 +270,7 @@ namespace BulbapediaScraper.Runner.Services.ScriptGenerator.Services
             {
                 relationships.Add(new Relationship
                 {
-                    Labels = new List<string> { "Is" },
+                    Labels = new List<string> { "IS" },
                     NodeId1 = nodeId,
                     NodeId2 = type.Name
                 });
