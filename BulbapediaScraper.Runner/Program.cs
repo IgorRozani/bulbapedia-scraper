@@ -31,7 +31,7 @@ namespace BulbapediaScraper.Runner
 
             var pokemonListScraper = _serviceProvider.GetService<IPokemonList>();
 
-            Console.WriteLine("Scraping: {0}", pokemonListScraper.GetName());
+            PrintScraperName(pokemonListScraper.GetName());
 
             var pokemonList = pokemonListScraper.Scrape();
 
@@ -43,7 +43,7 @@ namespace BulbapediaScraper.Runner
             };
             foreach (var scraper in scrapers)
             {
-                Console.WriteLine("Scraping: {0}", scraper.GetName());
+                PrintScraperName(scraper.GetName());
 
                 scraper.Scrape(pokemonList);
             }
@@ -57,6 +57,9 @@ namespace BulbapediaScraper.Runner
             Console.WriteLine();
             Console.WriteLine("BulbapediaScraper was finalized");
         }
+
+        private static void PrintScraperName(string scraperName) =>
+            Console.WriteLine("Scraping: {0}", scraperName);
 
         private static void Configure()
         {
