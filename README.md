@@ -8,8 +8,7 @@ This scraper get the data from the pages:
 * [Pokémon list by number](https://bulbapedia.bulbagarden.net/w/index.php?title=List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number) - to read the pokémon and regional variant data;
 * [Evolution list](https://bulbapedia.bulbagarden.net/w/index.php?title=List_of_Pok%C3%A9mon_by_evolution_family) - to read the evolutions and the Unown forms;
 * [Forms list](https://bulbapedia.bulbagarden.net/w/index.php?title=List_of_Pok%C3%A9mon_with_form_differences) - to read the forms from the pokémons;
-* [Mega evolution list](https://bulbapedia.bulbagarden.net/w/index.php?title=Mega_Evolution) - to read the mega evolutions;
-* [Move list](https://bulbapedia.bulbagarden.net/w/index.php?title=List_of_moves) - to read the pokémon moves.
+* [Mega evolution list](https://bulbapedia.bulbagarden.net/w/index.php?title=Mega_Evolution) - to read the mega evolutions.
 
 ## Project architecture
 The scraper is a console application in C# and .Net Core.
@@ -25,8 +24,7 @@ The properties in the configurations are:
 - pokemonListPath: the path to the pokémons list;
 - evolutionListPath: the path to the pokémons evolution list;
 - megaEvolutionListPath: the path to the pokémons mega evolution list;
-- formsListPath: the path to the pokémons forms list;
-- movesListPath: the path to the pokémons moves.
+- formsListPath: the path to the pokémons forms list.
 
 #### fileExportConfiguration
 This configuration has the property fileFullPath, that is used the informe the file path and file name to the script generated. It's mapped in the class FileExportConfiguration, inside the configurations.
@@ -40,8 +38,7 @@ This configuration has the property fileFullPath, that is used the informe the f
     "pokemonListPath": "List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number",
     "evolutionListPath": "List_of_Pok%C3%A9mon_by_evolution_family",
     "megaEvolutionListPath": "Mega_Evolution",
-    "formsListPath": "List_of_Pok%C3%A9mon_with_form_differences",
-    "movesListPath": "List_of_moves"
+    "formsListPath": "List_of_Pok%C3%A9mon_with_form_differences"
   },
   "fileExportConfiguration": {
     "fileFullPath": "C:\\temp\\pokemon.cypher"
@@ -56,7 +53,7 @@ The project has three main folders, that sepate the context from the project: Co
 This folder has the map from the configurations, utilized to read the configurations from the file exporation and bulbapedia urls, as explained in the last section.
 
 #### Models
-This folder contains the models from the domain, it's mapped all the data from the database. The main class is Pokemon, inside of it has all lists of evolutions, mega evolutions, types, forms and moves.
+This folder contains the models from the domain, it's mapped all the data from the database. The main class is Pokemon, inside of it has all lists of evolutions, mega evolutions, types, forms.
 Inside this folder has a subfolder named Comparers, inside of it has the TypeEqualityComparer utilized in the project to compare the types.
 
 #### Services
@@ -70,12 +67,12 @@ This service is responsible for reading the data from the bulbapedia and convert
 - EvolutionList: responsible for read the evolutions and the Unown forms;
 - FormsList: responsible for read the forms from the pokémons;
 - MegaEvolutionList: responsible for read the mega evolutions;
-- MoveList: responsible for read the pokémon moves;
 - PokemonList: responsible for read the pokémons and the regional variant (Alola region).
 
 The PokemonList scraper needs to be runned first, it's the one that create the pokemon list, utilized by the others scrapers.
 
-The MoveList scraper is not completed and for now it's not running automatically.
-
 #### ScriptGenerator
 This service is responsible for converting the pokémon list to a cypher script, it passes by all pokémon properties and create the nodes and relationships from the script.
+
+### Upcoming features
+Create the scraper and the structure to read the data from the [pokémon moves](https://bulbapedia.bulbagarden.net/wiki/List_of_moves).

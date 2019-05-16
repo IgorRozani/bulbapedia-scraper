@@ -5,7 +5,6 @@ using BulbapediaScraper.Runner.Services.Scrapers.Interfaces;
 using BulbapediaScraper.Runner.Services.Scrapers.Services.EvolutionList;
 using BulbapediaScraper.Runner.Services.Scrapers.Services.FormsList;
 using BulbapediaScraper.Runner.Services.Scrapers.Services.MegaEvolutionList;
-using BulbapediaScraper.Runner.Services.Scrapers.Services.MoveList;
 using BulbapediaScraper.Runner.Services.Scrapers.Services.PokemonList;
 using BulbapediaScraper.Runner.Services.ScriptGenerator.Interfaces;
 using BulbapediaScraper.Runner.Services.ScriptGenerator.Services;
@@ -81,7 +80,6 @@ namespace BulbapediaScraper.Runner
                 .AddSingleton<IEvolutionList, EvolutionList>()
                 .AddSingleton<IFormList, FormList>()
                 .AddSingleton<IMegaEvolutionList, MegaEvolutionList>()
-                .AddSingleton<IMoveList, MoveList>()
                 .AddSingleton<IFileExport, FileExport>()
                 .AddSingleton<INeo4jGenerator, Neo4jGenerator>()
                 .AddSingleton<IScriptGenerator, ScriptGenerator>()
