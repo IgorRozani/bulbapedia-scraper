@@ -75,5 +75,6 @@ The PokemonList scraper needs to be runned first, it's the one that create the p
 This service is responsible for converting the pokémon list to a cypher script, it passes by all pokémon properties and create the nodes and relationships from the script.
 
 ### Upcoming features
-Create the scraper and the structure to read the data from the [pokémon moves](https://bulbapedia.bulbagarden.net/wiki/List_of_moves).
-Add Gigantamax pokemons
+- Scrap Gigantamax pokemons
+- Galar variants
+- Scrap [pokémon moves](https://bulbapedia.bulbagarden.net/wiki/List_of_moves)
