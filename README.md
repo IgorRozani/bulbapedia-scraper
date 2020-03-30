@@ -76,3 +76,4 @@ This service is responsible for converting the pokémon list to a cypher script,
 
 ### Upcoming features
 Create the scraper and the structure to read the data from the [pokémon moves](https://bulbapedia.bulbagarden.net/wiki/List_of_moves).
+Add Gigantamax pokemons
